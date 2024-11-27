@@ -9,14 +9,20 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 def clean_url(url):
-    # Remove whitespace and newlines
-    url = url.strip()
+    # Remove all whitespace, newlines, and control characters
+    url = ''.join(char for char in url if not char.isspace())
+    
     # Ensure proper URL format
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
+        
     # Parse and rebuild URL to ensure proper format
-    parsed = urlparse(url)
-    return parsed.scheme + '://' + parsed.netloc + parsed.path
+    try:
+        parsed = urlparse(url)
+        # Rebuild URL with only necessary components
+        return f"{parsed.scheme}://{parsed.netloc}{parsed.path or '/'}"
+    except Exception as e:
+        raise ValueError(f"Invalid URL format: {str(e)}")
 
 class RateLimiter:
     def __init__(self, requests_per_second=0.5):  # Changed to 1 request per 2 seconds
@@ -51,6 +57,8 @@ def parse_sitemap(url):
 def scrape_website(url):
     try:
         url = clean_url(url)
+        if not url:
+            raise ValueError("Invalid URL provided")
         rate_limiter.wait()
         logger.info(f"Scraping URL: {url}")
         
