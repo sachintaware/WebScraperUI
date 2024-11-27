@@ -178,20 +178,26 @@ def analyze_content(content_id):
     try:
         content = ScrapedData.query.get_or_404(content_id)
         analyzer = ContentAnalyzer()
-        analysis = analyzer.analyze_content(content.content, content.url)
+        analysis_result = analyzer.analyze_content(content.content, content.url)
+        
+        # Format the analysis result into required structure
+        analysis = {
+            'style_tone': analysis_result.get('Website Style & Tone', ''),
+            'products_services': analysis_result.get('Products/Services & USPs', ''),
+            'icp': analysis_result.get('Ideal Customer Profile (ICP)', '')
+        }
         
         # Save analysis results
         new_analysis = ContentAnalysis(
             scraped_data_id=content_id,
-            style_tone=analysis.get('style_tone'),
-            products_services=analysis.get('products_services'),
-            icp=analysis.get('icp')
+            style_tone=analysis['style_tone'],
+            products_services=analysis['products_services'],
+            icp=analysis['icp']
         )
         db.session.add(new_analysis)
         db.session.commit()
         
         return jsonify(analysis)
     except Exception as e:
+        app.logger.error(f"Analysis error for content {content_id}: {str(e)}")
         return jsonify({'error': str(e)}), 500
-        flash(f'Error loading website details: {str(e)}')
-        return redirect(url_for('data'))
