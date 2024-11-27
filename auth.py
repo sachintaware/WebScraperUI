@@ -4,6 +4,25 @@ from werkzeug.security import check_password_hash
 from app import app, db, login_manager
 from models import User, ScrapedData
 from scraper import parse_sitemap, scrape_website, scrape_multiple_pages
+from models import User, ScrapedData
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import check_password_hash
+from app import app, db
+
+@app.route('/clear_data', methods=['POST'])
+@login_required
+def clear_data():
+    try:
+        # Only delete ScrapedData, preserve User data
+        db.session.query(ScrapedData).delete()
+        db.session.commit()
+        flash('Successfully cleared all scraped data')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error clearing data: {str(e)}')
+    return redirect(url_for('data'))
+
 from urllib.parse import urlparse
 import logging
 

@@ -5,6 +5,10 @@
     <div class="card-body">
         <h2 class="card-title">Scraped Data</h2>
         
+        <form method="POST" action="{{ url_for('clear_data') }}" class="mb-3" onsubmit="return confirm('Are you sure you want to delete all scraped data?');">
+            <button type="submit" class="btn btn-danger">Clear All Scraped Data</button>
+        </form>
+
         <form class="mb-4" method="GET">
             <div class="input-group">
                 <input type="text" class="form-control" name="search" value="{{ search }}"
