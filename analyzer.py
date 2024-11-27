@@ -14,6 +14,40 @@ class ContentAnalyzer:
             verbose=True,
             allow_delegation=False)
 
+    def generate_content(self, context):
+        content_generator = Agent(
+            role="Content Generator",
+            goal="Generate engaging and relevant content based on website analysis",
+            backstory="You are an expert content writer who can create various types of content while maintaining consistent style and tone",
+            verbose=True,
+            allow_delegation=False
+        )
+
+        generation_task = Task(
+            description=(
+                f"Generate {context['content_type']} content based on the following analysis:\n\n"
+                f"Style and Tone:\n{context['style_tone']}\n\n"
+                f"Products/Services:\n{context['products_services']}\n\n"
+                f"Target Audience:\n{context['icp']}\n\n"
+                "Ensure the content matches the website's style and tone while "
+                "addressing the target audience's needs and pain points."
+            ),
+            expected_output="Generated content in plain text format",
+            agent=content_generator
+        )
+
+        crew = Crew(
+            agents=[content_generator],
+            tasks=[generation_task],
+            verbose=True
+        )
+
+        try:
+            result = crew.kickoff()
+            return str(result)
+        except Exception as e:
+            raise Exception(f"Content generation failed: {str(e)}")
+
     def analyze_content(self, content, url):
         analysis_task = Task(
             description=(

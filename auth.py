@@ -206,3 +206,38 @@ def domain_summary(domain):
     except Exception as e:
         app.logger.error(f"Error generating domain summary for {domain}: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@app.route('/generate_content/<domain>', methods=['POST'])
+@login_required
+def generate_content(domain):
+    try:
+        content_type = request.json.get('content_type')
+        if not content_type:
+            return jsonify({'error': 'Content type is required'}), 400
+
+        # Get domain summary
+        domain_summary = DomainSummary.query.filter_by(domain=domain).first()
+        if not domain_summary:
+            return jsonify({'error': 'Domain summary not found'}), 404
+
+        # Initialize analyzer
+        analyzer = ContentAnalyzer()
+        
+        # Prepare context for content generation
+        context = {
+            'style_tone': domain_summary.style_tone,
+            'products_services': domain_summary.products_services,
+            'icp': domain_summary.icp,
+            'content_type': content_type
+        }
+
+        # Generate content based on domain summary and content type
+        generated_content = analyzer.generate_content(context)
+        
+        return jsonify({
+            'content': generated_content
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error generating content for {domain}: {str(e)}")
+        return jsonify({'error': str(e)}), 500

@@ -6,9 +6,14 @@
         <h2 class="card-title">Content Summary</h2>
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <button id="generateSummaryBtn" class="btn btn-primary" onclick="generateSummary()">
-                    <i class="bi bi-file-text"></i> Generate Summary
-                </button>
+                <div class="btn-group">
+                    <button id="generateSummaryBtn" class="btn btn-primary" onclick="generateSummary()">
+                        <i class="bi bi-file-text"></i> Generate Summary
+                    </button>
+                    <button id="generateContentBtn" class="btn btn-success" onclick="openGenerateContentModal()">
+                        <i class="bi bi-pencil-square"></i> Generate Content
+                    </button>
+                </div>
                 {% if domain_summary %}
                 <small class="text-muted ms-2">Last updated: {{ domain_summary.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
                 {% endif %}
@@ -116,6 +121,92 @@ function generateSummary() {
             summaryLoader.classList.add('d-none');
             generateButton.disabled = false;
         });
+}
+</script>
+<!-- Content Generation Modal -->
+<div class="modal fade" id="contentGenerationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Generate Content</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="contentType" class="form-label">Content Type</label>
+                    <select class="form-select" id="contentType">
+                        <option value="blog">Blog Post</option>
+                        <option value="social">Social Media Post</option>
+                        <option value="product">Product Description</option>
+                    </select>
+                </div>
+                <div id="contentGenerationLoader" class="d-none">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Generating Content...</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="generatedContent" class="d-none">
+                    <div class="analysis-section">
+                        <h6>Generated Content:</h6>
+                        <div id="contentResult" class="white-space-pre-wrap"></div>
+                    </div>
+                </div>
+                <div id="contentError" class="alert alert-danger d-none"></div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="generateContent()">Generate</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openGenerateContentModal() {
+    const modal = new bootstrap.Modal(document.getElementById('contentGenerationModal'));
+    modal.show();
+}
+
+function generateContent() {
+    const contentType = document.getElementById('contentType').value;
+    const loader = document.getElementById('contentGenerationLoader');
+    const resultDiv = document.getElementById('generatedContent');
+    const errorDiv = document.getElementById('contentError');
+    const generateButton = document.querySelector('#contentGenerationModal .btn-primary');
+
+    // Show loader and hide previous results
+    loader.classList.remove('d-none');
+    resultDiv.classList.add('d-none');
+    errorDiv.classList.add('d-none');
+    generateButton.disabled = true;
+
+    fetch(`/generate_content/{{ domain }}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content_type: contentType })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        const contentResult = document.getElementById('contentResult');
+        contentResult.textContent = data.content;
+        resultDiv.classList.remove('d-none');
+    })
+    .catch(error => {
+        errorDiv.textContent = `Error generating content: ${error.message}`;
+        errorDiv.classList.remove('d-none');
+    })
+    .finally(() => {
+        loader.classList.add('d-none');
+        generateButton.disabled = false;
+    });
 }
 </script>
 {% endblock %}
