@@ -169,22 +169,49 @@ function generateSummary() {
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize modal elements
+    const contentModal = document.getElementById('contentGenerationModal');
+    if (contentModal) {
+        const bsModal = new bootstrap.Modal(contentModal);
+    }
+});
+
 function openGenerateContentModal() {
-    const modal = new bootstrap.Modal(document.getElementById('contentGenerationModal'));
+    const modalElement = document.getElementById('contentGenerationModal');
+    if (!modalElement) {
+        console.error('Content generation modal not found');
+        return;
+    }
+    const modal = new bootstrap.Modal(modalElement);
     modal.show();
 }
 
 function generateContent() {
-    const contentType = document.getElementById('contentType');
-    const contentTitle = document.getElementById('contentTitle');
-    const loader = document.getElementById('contentGenerationLoader');
-    const resultDiv = document.getElementById('generatedContent');
-    const errorDiv = document.getElementById('contentError');
-    const generateButton = document.querySelector('#contentGenerationModal .btn-primary');
+    // Get modal elements
+    const modalElement = document.getElementById('contentGenerationModal');
+    if (!modalElement) {
+        console.error('Modal element not found');
+        return;
+    }
+
+    const contentType = modalElement.querySelector('#contentType');
+    const contentTitle = modalElement.querySelector('#contentTitle');
+    const loader = modalElement.querySelector('#contentGenerationLoader');
+    const resultDiv = modalElement.querySelector('#generatedContent');
+    const errorDiv = modalElement.querySelector('#contentError');
+    const generateButton = modalElement.querySelector('.btn-primary');
 
     // Check if all required elements exist
     if (!contentType || !contentTitle || !loader || !resultDiv || !errorDiv || !generateButton) {
-        console.error('Required elements not found');
+        console.error('Required modal elements not found:', {
+            contentType: !!contentType,
+            contentTitle: !!contentTitle,
+            loader: !!loader,
+            resultDiv: !!resultDiv,
+            errorDiv: !!errorDiv,
+            generateButton: !!generateButton
+        });
         return;
     }
 
