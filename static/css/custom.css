@@ -14,9 +14,15 @@
     font-size: 0.875rem;
 }
 
+.content-section {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #495057;
+    margin-bottom: 0;
+}
+
 .content-wrapper {
-    max-height: 70vh;
     overflow-y: auto;
+    max-height: 70vh;
     white-space: pre-wrap;
     word-wrap: break-word;
     font-size: 1rem;
@@ -26,9 +32,7 @@
 
 .content-text {
     padding: 1.5rem;
-    border-radius: 0.25rem;
-    border: 1px solid #495057;
-    background-color: #212529 !important;
+    background-color: #212529;
     color: #e9ecef;
 }
 
