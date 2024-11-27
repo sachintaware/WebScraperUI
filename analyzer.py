@@ -58,47 +58,42 @@ class ContentAnalyzer:
         try:
             result = crew.kickoff()
             
-            if hasattr(result, 'final_answer'):
+            # Handle string result from CrewAI
+            if isinstance(result, str):
                 try:
+                    # Try to extract JSON from the string response
                     import json
-                    # Parse the result and ensure it matches the expected format
-                    parsed_result = json.loads(result.final_answer)
+                    import re
                     
-                    # Return the parsed result directly, it should already be in the correct format
-                    # due to the expected_output template
-                    return parsed_result
-                    
-                except json.JSONDecodeError:
-                    # If JSON parsing fails, return a properly structured error response
-                    return {
-                        "website_analysis": {
-                            "style": "Error parsing response",
-                            "tone": "",
-                            "theme": "",
-                            "products_services": [],
-                            "ideal_customer_profile": {
-                                "business_types": [],
-                                "size": "",
-                                "goals": [],
-                                "pain_points": []
+                    # Look for JSON-like content in the string
+                    json_match = re.search(r'\{.*\}', result, re.DOTALL)
+                    if json_match:
+                        result_json = json.loads(json_match.group())
+                    else:
+                        # Create structured response from plain text
+                        result_json = {
+                            "website_analysis": {
+                                "style": result,
+                                "tone": "",
+                                "theme": "",
+                                "products_services": [],
+                                "ideal_customer_profile": {
+                                    "business_types": [],
+                                    "size": "",
+                                    "goals": [],
+                                    "pain_points": []
+                                }
                             }
                         }
-                    }
+                    return result_json
+                except json.JSONDecodeError:
+                    raise Exception("Failed to parse analysis result")
+                    
+            # Handle object result
+            if hasattr(result, 'final_answer'):
+                return json.loads(result.final_answer)
+                
+            raise Exception("Unexpected analysis result format")
             
-            # Return empty structure if no result
-            return {
-                "website_analysis": {
-                    "style": "",
-                    "tone": "",
-                    "theme": "",
-                    "products_services": [],
-                    "ideal_customer_profile": {
-                        "business_types": [],
-                        "size": "",
-                        "goals": [],
-                        "pain_points": []
-                    }
-                }
-            }
         except Exception as e:
             raise Exception(f"Analysis failed: {str(e)}")

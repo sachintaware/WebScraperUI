@@ -185,35 +185,12 @@ def analyze_content(content_id):
     try:
         content = ScrapedData.query.get_or_404(content_id)
         analyzer = ContentAnalyzer()
-        analysis_result = analyzer.analyze_content(content.content,
-                                                   content.url)
-        # Restructure the analysis result to match the expected format
-        analysis = {
-            'style_tone':
-            analysis_result.get('website_style', {}).get('tone', '') +
-            '\nTheme: ' +
-            analysis_result.get('website_style', {}).get('theme', ''),
-            'products_services':
-            '\n'.join([
-                f"• {product['name']}: " + '\n  USPs: ' +
-                '\n  - '.join(product['usps'])
-                for product in analysis_result.get('products_services', [])
-            ]),
-            'icp':
-            (f"Description: {analysis_result.get('ideal_customer_profile', {}).get('description', '')}\n\n"
-             + f"Key Attributes:\n- " + '\n- '.join(
-                 analysis_result.get('ideal_customer_profile', {}).get(
-                     'key_attributes', [])))
-        }
-        # Save analysis results
-        new_analysis = ContentAnalysis(
-            scraped_data_id=content_id,
-            style_tone=analysis['style_tone'],
-            products_services=analysis['products_services'],
-            icp=analysis['icp'])
-        db.session.add(new_analysis)
-        db.session.commit()
-        return jsonify(analysis)
+        analysis_result = analyzer.analyze_content(content.content, content.url)
+        
+        if not isinstance(analysis_result, dict):
+            raise Exception("Invalid analysis result format")
+            
+        return jsonify(analysis_result)
     except Exception as e:
         app.logger.error(f"Analysis error for content {content_id}: {str(e)}")
         return jsonify({'error': str(e)}), 500
