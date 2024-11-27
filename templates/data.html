@@ -73,17 +73,17 @@
 {% for item in pagination.items %}
 <div class="modal fade" id="contentModal{{ item.id }}" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
                 <h5 class="modal-title">{{ item.title }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="content-wrapper bg-light p-3 rounded">
-                    <div class="mb-3">
-                        <strong>URL:</strong> <a href="{{ item.url }}" target="_blank">{{ item.url }}</a>
+                <div class="content-wrapper bg-dark p-3 rounded">
+                    <div class="mb-3 text-light">
+                        <strong>URL:</strong> <a href="{{ item.url }}" target="_blank" class="text-info">{{ item.url }}</a>
                     </div>
-                    <div class="content-text">
+                    <div class="content-text bg-dark">
                         {{ item.content|safe }}
                     </div>
                 </div>

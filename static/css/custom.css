@@ -19,15 +19,25 @@
     overflow-y: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #e9ecef;
 }
 
 .content-text {
-    background: white;
-    padding: 1rem;
+    padding: 1.5rem;
     border-radius: 0.25rem;
-    border: 1px solid #dee2e6;
+    border: 1px solid #495057;
+    background-color: #212529 !important;
+    color: #e9ecef;
+}
+
+.modal-header {
+    border-bottom: 1px solid #495057;
+}
+
+.modal-content {
+    color: #e9ecef;
 }
 
 .domain-group {
