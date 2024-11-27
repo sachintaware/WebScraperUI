@@ -17,30 +17,31 @@ class ContentAnalyzer:
     def analyze_content(self, content, url):
         analysis_task = Task(
             description=(
-                f"Analyze the following content from {url} and provide insights in JSON format with the following structure:\n"
-                "{\n"
-                '  "website_analysis": {\n'
-                '    "style": "style description",\n'
-                '    "tone": "tone description",\n'
-                '    "theme": "theme description",\n'
-                '    "products_services": [\n'
-                '      {\n'
-                '        "name": "product name",\n'
-                '        "description": "description",\n'
-                '        "USPs": ["USP1", "USP2"]\n'
-                '      }\n'
-                '    ],\n'
-                '    "ideal_customer_profile": {\n'
-                '      "business_types": ["type1", "type2"],\n'
-                '      "size": "size description",\n'
-                '      "goals": ["goal1", "goal2"],\n'
-                '      "pain_points": ["point1", "point2"]\n'
-                '    }\n'
-                '  }\n'
-                '}'
+                f"Analyze the following content from {url} and provide insights about:\n"
+                "1. Website style, tone, and theme\n"
+                "2. Products/Services offered and their USPs\n"
+                "3. Ideal Customer Profile (ICP)\n\n"
+                "Format the response in the following JSON structure:\n"
+                '{"website_analysis": {'
+                '"style": "Professional and Direct",'
+                '"tone": "Persuasive and Informative",'
+                '"theme": "Main theme of the website",'
+                '"products_services": ['
+                '{"name": "Product/Service Name",'
+                '"description": "Description of the service",'
+                '"USPs": ["USP1", "USP2", "USP3"]}'
+                '],'
+                '"ideal_customer_profile": {'
+                '"business_types": ["Type1", "Type2"],'
+                '"size": "Size description",'
+                '"goals": ["Goal1", "Goal2"],'
+                '"pain_points": ["Point1", "Point2"]'
+                '}}}'
             ),
-            expected_output="Analysis in JSON format",
-            context=content,
+            expected_output="JSON string containing website analysis in the specified format",
+            context=[
+                {"content": content, "url": url}
+            ],
             agent=self.analyzer_agent
         )
 
