@@ -20,36 +20,49 @@
             </div>
         </form>
 
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>URL</th>
-                        <th>Domain</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in pagination.items %}
-                    <tr>
-                        <td>{{ item.title }}</td>
-                        <td><a href="{{ item.url }}" target="_blank">{{ item.url[:50] }}...</a></td>
-                        <td>{{ item.domain }}</td>
-                        <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                        <td><span class="badge bg-{{ 'success' if item.status == 'success' else 'danger' }}">
-                            {{ item.status }}</span></td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#contentModal{{ item.id }}">
-                                <i class="bi bi-eye"></i> View Content
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="accordion" id="domainsAccordion">
+            {% for domain, items in pagination.items|groupby('domain') %}
+            <div class="accordion-item bg-dark">
+                <h2 class="accordion-header">
+                    <button class="accordion-button bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                        {{ domain }} <span class="badge bg-secondary ms-2">{{ items|list|length }} pages</span>
+                    </button>
+                </h2>
+                <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#domainsAccordion">
+                    <div class="accordion-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>URL</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in items %}
+                                    <tr>
+                                        <td>{{ item.title }}</td>
+                                        <td><a href="{{ item.url }}" target="_blank">{{ item.url[:50] }}...</a></td>
+                                        <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td><span class="badge bg-{{ 'success' if item.status == 'success' else 'danger' }}">
+                                            {{ item.status }}</span></td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#contentModal{{ item.id }}">
+                                                <i class="bi bi-eye"></i> View Content
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
 
         {% if pagination.pages > 1 %}
