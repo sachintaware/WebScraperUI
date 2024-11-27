@@ -1,21 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card mb-4">
+<div class="card">
     <div class="card-body">
+        <h2 class="card-title">Content Summary</h2>
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="card-title mb-0">Content Summary for {{ domain }}</h2>
+            <button id="generateSummaryBtn" class="btn btn-primary" onclick="generateSummary()">
+                <i class="bi bi-file-text"></i> Generate Summary
+            </button>
             <a href="{{ url_for('data') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Overview
             </a>
         </div>
-
-        <button id="generateSummaryBtn" class="btn btn-primary mb-4" onclick="generateSummary()">
-            <i class="bi bi-file-text"></i> Generate Summary
-        </button>
-
+        
         <div id="summaryLoader" class="d-none">
-            <div class="d-flex justify-content-center mb-4">
+            <div class="d-flex justify-content-center">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Analyzing...</span>
                 </div>
