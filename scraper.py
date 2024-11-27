@@ -8,6 +8,16 @@ from urllib.parse import urlparse
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+def clean_url(url):
+    # Remove whitespace and newlines
+    url = url.strip()
+    # Ensure proper URL format
+    if not url.startswith(('http://', 'https://')):
+        url = 'https://' + url
+    # Parse and rebuild URL to ensure proper format
+    parsed = urlparse(url)
+    return parsed.scheme + '://' + parsed.netloc + parsed.path
+
 class RateLimiter:
     def __init__(self, requests_per_second=0.5):  # Changed to 1 request per 2 seconds
         self.last_request = 0
@@ -22,12 +32,11 @@ class RateLimiter:
 rate_limiter = RateLimiter()
 
 def parse_sitemap(url):
-    # Handle both direct sitemap URLs and domain URLs
-    if not url.endswith('sitemap.xml'):
-        parsed = urlparse(url)
-        url = f"{parsed.scheme}://{parsed.netloc}/sitemap.xml"
-    
     try:
+        url = clean_url(url)
+        if not url.endswith('sitemap.xml'):
+            parsed = urlparse(url)
+            url = f"{parsed.scheme}://{parsed.netloc}/sitemap.xml"
         logger.info(f"Attempting to parse sitemap: {url}")
         response = requests.get(url)
         response.raise_for_status()
@@ -40,14 +49,15 @@ def parse_sitemap(url):
         raise Exception(f"Error parsing sitemap: {str(e)}")
 
 def scrape_website(url):
-    rate_limiter.wait()
-    logger.info(f"Scraping URL: {url}")
-    
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
-    
     try:
+        url = clean_url(url)
+        rate_limiter.wait()
+        logger.info(f"Scraping URL: {url}")
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         
