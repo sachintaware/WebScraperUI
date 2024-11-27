@@ -164,7 +164,10 @@
             resultDiv.innerHTML = `
                 <div class="analysis-section mb-3">
                     <h6>Website Style & Tone:</h6>
-                    <p class="white-space-pre-wrap">${data.style_tone || 'Not available'}</p>
+                    <p class="white-space-pre-wrap">${data.website_analysis.tone || 'Not available'}</p>
+                    <p class="white-space-pre-wrap">${data.website_analysis.style || 'Not available'}</p>
+                    <p class="white-space-pre-wrap">${data.website_analysis.theme || 'Not available'}</p>
+                    <p class="white-space-pre-wrap">${data.website_style.style || 'Not available'}</p>
                 </div>
                 <div class="analysis-section mb-3">
                     <h6>Products/Services & USPs:</h6>
