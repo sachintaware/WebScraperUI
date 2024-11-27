@@ -15,75 +15,89 @@ class ContentAnalyzer:
             allow_delegation=False)
 
     def analyze_content(self, content, url):
-        # Ensure content is properly formatted
-        if isinstance(content, str):
-            formatted_content = {'text': content, 'url': url}
-        else:
-            formatted_content = content
         analysis_task = Task(
-            description=
-            f"Analyze the following content from {url} and provide insights about:\n"
-            "1. Website style, tone, and theme\n"
-            "2. Products/Services offered and their USPs\n"
-            "3. Ideal Customer Profile (ICP)",
-            expected_output=
-            "JSON string with website analysis including style, tone, products, and ICP",
-            context=None,
-            agent=self.analyzer_agent)
-        try:
-            analysis_task.description += f"\n\nURL: {url}\nContent: {formatted_content['text']}"
-            crew = Crew(agents=[self.analyzer_agent],
-                        tasks=[analysis_task],
-                        verbose=True)
-            result = crew.kickoff()
+            description=(
+                f"Analyze the following content from {url} and provide insights about:\n"
+                "1. Website style, tone, and theme\n"
+                "2. Products/Services offered and their USPs\n"
+                "3. Ideal Customer Profile (ICP)"
+            ),
+            expected_output=(
+                "Analyze the content and provide a structured analysis in the following format:\n"
+                "{\n"
+                '  "website_analysis": {\n'
+                '    "style": "style description",\n'
+                '    "tone": "tone description",\n'
+                '    "theme": "theme description",\n'
+                '    "products_services": [\n'
+                '      {\n'
+                '        "name": "product name",\n'
+                '        "description": "product description",\n'
+                '        "USPs": ["USP1", "USP2"]\n'
+                '      }\n'
+                '    ],\n'
+                '    "ideal_customer_profile": {\n'
+                '      "business_types": ["type1", "type2"],\n'
+                '      "size": "size description",\n'
+                '      "goals": ["goal1", "goal2"],\n'
+                '      "pain_points": ["point1", "point2"]\n'
+                '    }\n'
+                '  }\n'
+                '}'
+            ),
+            context=[f"Content to analyze: {content}", f"URL: {url}"],
+            agent=self.analyzer_agent
+        )
 
-            # The result is a CrewOutput object, we need to access its final answer
+        crew = Crew(
+            agents=[self.analyzer_agent],
+            tasks=[analysis_task],
+            verbose=True
+        )
+
+        try:
+            result = crew.kickoff()
+            
             if hasattr(result, 'final_answer'):
                 try:
                     import json
+                    # Parse the result and ensure it matches the expected format
                     parsed_result = json.loads(result.final_answer)
-                    print("----++++++++++++++++++++++----------------" +
-                          parsed_result)
-                    print(
-                        "+++++++++++++++++++++++++++++----------------------++++++++++++++++++++++"
-                        + parsed_result.website_style)
-                    return {
-                        'website_style': {
-                            'tone': parsed_result.get('Website Style & Tone',
-                                                      ''),
-                            'theme': parsed_result.get('Theme', '')
-                        },
-                        'products_services':
-                        parsed_result.get('Products/Services & USPs', []),
-                        'ideal_customer_profile': {
-                            'description':
-                            parsed_result.get('Ideal Customer Profile (ICP)',
-                                              ''),
-                            'key_attributes': []
-                        }
-                    }
+                    
+                    # Return the parsed result directly, it should already be in the correct format
+                    # due to the expected_output template
+                    return parsed_result
+                    
                 except json.JSONDecodeError:
-                    # If JSON parsing fails, return structured format with raw text
+                    # If JSON parsing fails, return a properly structured error response
                     return {
-                        'website_style': {
-                            'tone': str(result.final_answer),
-                            'theme': ''
-                        },
-                        'products_services': [],
-                        'ideal_customer_profile': {
-                            'description': '',
-                            'key_attributes': []
+                        "website_analysis": {
+                            "style": "Error parsing response",
+                            "tone": "",
+                            "theme": "",
+                            "products_services": [],
+                            "ideal_customer_profile": {
+                                "business_types": [],
+                                "size": "",
+                                "goals": [],
+                                "pain_points": []
+                            }
                         }
                     }
+            
+            # Return empty structure if no result
             return {
-                'website_style': {
-                    'tone': '',
-                    'theme': ''
-                },
-                'products_services': [],
-                'ideal_customer_profile': {
-                    'description': '',
-                    'key_attributes': []
+                "website_analysis": {
+                    "style": "",
+                    "tone": "",
+                    "theme": "",
+                    "products_services": [],
+                    "ideal_customer_profile": {
+                        "business_types": [],
+                        "size": "",
+                        "goals": [],
+                        "pain_points": []
+                    }
                 }
             }
         except Exception as e:
