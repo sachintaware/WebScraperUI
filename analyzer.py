@@ -17,6 +17,12 @@ class ContentAnalyzer:
                        "1. Website style, tone, and theme\n"
                        "2. Products/Services offered and their USPs\n"
                        "3. Ideal Customer Profile (ICP)",
+            expected_output={
+                "Website Style & Tone": "Detailed analysis of website's style, tone, and overall theme",
+                "Products/Services & USPs": "List and analysis of products/services and their unique selling points",
+                "Ideal Customer Profile (ICP)": "Description of the ideal customer profile"
+            },
+            context={"content": content, "url": url},
             agent=self.analyzer_agent
         )
 
@@ -26,5 +32,8 @@ class ContentAnalyzer:
             verbose=True
         )
 
-        result = crew.kickoff()
-        return result
+        try:
+            result = crew.kickoff()
+            return result
+        except Exception as e:
+            raise Exception(f"Analysis failed: {str(e)}")
