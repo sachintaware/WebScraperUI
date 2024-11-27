@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">Scraped Data</h2>
+        
+        <form class="mb-4" method="GET">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" value="{{ search }}"
+                       placeholder="Search in title or content...">
+                <button class="btn btn-primary" type="submit">Search</button>
+                {% if search %}
+                <a href="{{ url_for('data') }}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>URL</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in pagination.items %}
+                    <tr>
+                        <td>{{ item.title }}</td>
+                        <td><a href="{{ item.url }}" target="_blank">{{ item.url[:50] }}...</a></td>
+                        <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td><span class="badge bg-{{ 'success' if item.status == 'success' else 'danger' }}">
+                            {{ item.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if pagination.pages > 1 %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% for page in pagination.iter_pages() %}
+                    {% if page %}
+                        <li class="page-item {{ 'active' if page == pagination.page else '' }}">
+                            <a class="page-link" href="{{ url_for('data', page=page, search=search) }}">{{ page }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
