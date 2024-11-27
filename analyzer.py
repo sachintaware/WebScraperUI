@@ -15,24 +15,66 @@ class ContentAnalyzer:
             allow_delegation=False)
 
     def generate_content(self, context):
+        # Create specialized agents for different content types
         content_generator = Agent(
             role="Content Generator",
-            goal="Generate engaging and relevant content based on website analysis",
-            backstory="You are an expert content writer who can create various types of content while maintaining consistent style and tone",
+            goal="Generate highly engaging and platform-optimized content based on website analysis",
+            backstory="""You are an expert content writer with deep expertise in creating content 
+            for multiple platforms. You understand the nuances of different content types and how 
+            to optimize for each platform while maintaining brand voice and messaging.""",
             verbose=True,
             allow_delegation=False
         )
 
+        # Define platform-specific instructions
+        platform_guidelines = {
+            'blog': """Create a comprehensive blog post (800-1200 words) with:
+                      - Engaging headline
+                      - Clear introduction
+                      - 3-4 main sections with subheadings
+                      - Actionable takeaways
+                      - SEO-optimized content
+                      - Call-to-action""",
+            
+            'article': """Write a detailed article (1000-1500 words) with:
+                         - Compelling title
+                         - Executive summary
+                         - In-depth analysis
+                         - Expert insights
+                         - Data/statistics when relevant
+                         - Professional conclusion""",
+            
+            'instagram': """Create an Instagram post with:
+                          - Attention-grabbing first line
+                          - 3-5 short paragraphs
+                          - Relevant hashtags
+                          - Strong call-to-action
+                          - Total length: 150-200 words""",
+            
+            'linkedin': """Craft a LinkedIn post with:
+                         - Professional tone
+                         - Industry insights
+                         - Personal/business perspective
+                         - Clear value proposition
+                         - Professional call-to-action
+                         - Total length: 200-300 words"""
+        }
+
         generation_task = Task(
             description=(
-                f"Generate {context['content_type']} content based on the following analysis:\n\n"
-                f"Style and Tone:\n{context['style_tone']}\n\n"
-                f"Products/Services:\n{context['products_services']}\n\n"
+                f"Generate {context['content_type']} content following these guidelines:\n\n"
+                f"{platform_guidelines.get(context['content_type'].lower(), '')}\n\n"
+                f"Website Style and Tone:\n{context['style_tone']}\n\n"
+                f"Products/Services Information:\n{context['products_services']}\n\n"
                 f"Target Audience:\n{context['icp']}\n\n"
-                "Ensure the content matches the website's style and tone while "
-                "addressing the target audience's needs and pain points."
+                "Requirements:\n"
+                "1. Match the website's style and tone perfectly\n"
+                "2. Address specific pain points of the target audience\n"
+                "3. Incorporate key product/service benefits\n"
+                "4. Optimize for the specific platform\n"
+                "5. Include relevant calls-to-action"
             ),
-            expected_output="Generated content in plain text format",
+            expected_output="Complete, formatted content ready for the specified platform",
             agent=content_generator
         )
 
@@ -44,7 +86,11 @@ class ContentAnalyzer:
 
         try:
             result = crew.kickoff()
-            return str(result)
+            # Clean and format the result
+            content = str(result)
+            # Remove any potential system prompts or prefixes
+            content = content.replace("Here's the generated content:", "").strip()
+            return content
         except Exception as e:
             raise Exception(f"Content generation failed: {str(e)}")
 
