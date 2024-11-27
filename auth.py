@@ -212,9 +212,11 @@ def domain_summary(domain):
 def generate_content(domain):
     try:
         content_type = request.json.get('content_type')
-        if not content_type:
-            return jsonify({'error': 'Content type is required'}), 400
-
+        title = request.json.get('title')
+        
+        if not content_type or not title:
+            return jsonify({'error': 'Content type and title are required'}), 400
+            
         # Get domain summary
         domain_summary = DomainSummary.query.filter_by(domain=domain).first()
         if not domain_summary:
@@ -228,7 +230,8 @@ def generate_content(domain):
             'style_tone': domain_summary.style_tone,
             'products_services': domain_summary.products_services,
             'icp': domain_summary.icp,
-            'content_type': content_type
+            'content_type': content_type,
+            'title': title
         }
 
         # Generate content based on domain summary and content type

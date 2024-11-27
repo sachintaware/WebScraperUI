@@ -62,7 +62,7 @@ class ContentAnalyzer:
 
         generation_task = Task(
             description=(
-                f"Generate {context['content_type']} content following these guidelines:\n\n"
+                f"Generate {context['content_type']} content about '{context['title']}' following these guidelines:\n\n"
                 f"{platform_guidelines.get(context['content_type'].lower(), '')}\n\n"
                 f"Website Style and Tone:\n{context['style_tone']}\n\n"
                 f"Products/Services Information:\n{context['products_services']}\n\n"

@@ -176,10 +176,17 @@ function openGenerateContentModal() {
 
 function generateContent() {
     const contentType = document.getElementById('contentType').value;
+    const contentTitle = document.getElementById('contentTitle').value;
     const loader = document.getElementById('contentGenerationLoader');
     const resultDiv = document.getElementById('generatedContent');
     const errorDiv = document.getElementById('contentError');
     const generateButton = document.querySelector('#contentGenerationModal .btn-primary');
+
+    if (!contentTitle.trim()) {
+        errorDiv.textContent = 'Please enter a title/topic';
+        errorDiv.classList.remove('d-none');
+        return;
+    }
 
     // Show loader and hide previous results
     loader.classList.remove('d-none');
@@ -192,7 +199,10 @@ function generateContent() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ content_type: contentType })
+        body: JSON.stringify({ 
+            content_type: contentType,
+            title: contentTitle 
+        })
     })
     .then(response => response.json())
     .then(data => {
