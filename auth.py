@@ -3,8 +3,11 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
 from app import app, db, login_manager
 from models import User, ScrapedData
-from scraper import scrape_website
+from scraper import parse_sitemap, scrape_website, scrape_multiple_pages
 from urllib.parse import urlparse
+import logging
+
+logger = logging.getLogger(__name__)
 
 @login_manager.user_loader
 def load_user(id):
@@ -67,16 +70,45 @@ def scrape():
         return redirect(url_for('dashboard'))
     
     try:
-        result = scrape_website(url)
-        data = ScrapedData(
-            url=url,
-            title=result['title'],
-            content=result['content']
-        )
-        db.session.add(data)
+        # Try to parse sitemap first
+        logger.info(f"Attempting to scrape URL: {url}")
+        try:
+            urls = parse_sitemap(url)
+            logger.info(f"Successfully parsed sitemap, found {len(urls)} URLs")
+            flash(f'Found {len(urls)} URLs in sitemap, starting scraping...')
+            results = scrape_multiple_pages(urls)
+        except Exception as sitemap_error:
+            logger.info(f"No sitemap found or error parsing sitemap: {sitemap_error}")
+            # If sitemap parsing fails, treat as single URL
+            results = [scrape_website(url)]
+            results[0]['url'] = url
+        
+        # Save all results
+        success_count = 0
+        error_count = 0
+        
+        for result in results:
+            data = ScrapedData(
+                url=result['url'],
+                title=result['title'],
+                content=result['content'],
+                status=result.get('status', 'success')
+            )
+            db.session.add(data)
+            if result.get('status') == 'success':
+                success_count += 1
+            else:
+                error_count += 1
+        
         db.session.commit()
-        flash('Website scraped successfully')
+        
+        if len(results) > 1:
+            flash(f'Scraping completed: {success_count} successful, {error_count} failed')
+        else:
+            flash('Website scraped successfully')
+            
     except Exception as e:
+        logger.error(f"Error in scrape route: {str(e)}")
         flash(f'Error scraping website: {str(e)}')
     
     return redirect(url_for('dashboard'))
