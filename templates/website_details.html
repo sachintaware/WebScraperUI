@@ -1,14 +1,85 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card">
+<div class="card mb-4">
     <div class="card-body">
-        <h2 class="card-title">Content Summary</h2>
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="card-title mb-0">Content Summary for {{ domain }}</h2>
             <a href="{{ url_for('data') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Overview
             </a>
         </div>
+
+        <button id="generateSummaryBtn" class="btn btn-primary mb-4" onclick="generateSummary()">
+            <i class="bi bi-file-text"></i> Generate Summary
+        </button>
+
+        <div id="summaryLoader" class="d-none">
+            <div class="d-flex justify-content-center mb-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Analyzing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="summaryContent" class="d-none">
+            <div class="analysis-section mb-4">
+                <h5 class="mb-3">Website Style & Tone</h5>
+                <div id="styleToneContent" class="white-space-pre-wrap"></div>
+            </div>
+
+            <div class="analysis-section mb-4">
+                <h5 class="mb-3">Products & Services</h5>
+                <div id="productsServicesContent" class="white-space-pre-wrap"></div>
+            </div>
+
+            <div class="analysis-section">
+                <h5 class="mb-3">Ideal Customer Profile (ICP)</h5>
+                <div id="icpContent" class="white-space-pre-wrap"></div>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="alert alert-danger d-none"></div>
     </div>
 </div>
+
+<script>
+function generateSummary() {
+    const summaryLoader = document.getElementById('summaryLoader');
+    const summaryContent = document.getElementById('summaryContent');
+    const errorMessage = document.getElementById('errorMessage');
+    const generateButton = document.getElementById('generateSummaryBtn');
+
+    // Show loader and disable button
+    summaryLoader.classList.remove('d-none');
+    generateButton.disabled = true;
+    summaryContent.classList.add('d-none');
+    errorMessage.classList.add('d-none');
+
+    fetch(`/domain_summary/{{ domain }}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            // Update content sections
+            document.getElementById('styleToneContent').textContent = data.style_tone.join('\n');
+            document.getElementById('productsServicesContent').textContent = data.products_services.join('\n\n');
+            document.getElementById('icpContent').textContent = data.icp.join('\n\n');
+
+            // Show content
+            summaryContent.classList.remove('d-none');
+        })
+        .catch(error => {
+            errorMessage.textContent = `Error generating summary: ${error.message}`;
+            errorMessage.classList.remove('d-none');
+        })
+        .finally(() => {
+            // Hide loader and enable button
+            summaryLoader.classList.add('d-none');
+            generateButton.disabled = false;
+        });
+}
+</script>
 {% endblock %}
