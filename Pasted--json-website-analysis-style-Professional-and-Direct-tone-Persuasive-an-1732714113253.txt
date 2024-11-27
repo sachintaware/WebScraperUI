@@ -1,0 +1,61 @@
+```json
+{
+  "website_analysis": {
+    "style": "Professional and Direct",
+    "tone": "Persuasive and Informative",
+    "theme": "Growth-Oriented E-commerce SEO Solutions",
+    "products_services": [
+      {
+        "name": "E-commerce SEO Packages",
+        "description": "Tailored SEO services aimed at improving store traffic and revenue for various business sizes.",
+        "price": {
+          "niche_brand": {
+            "initial": "$1599",
+            "monthly": "$895"
+          },
+          "curated_brand": {
+            "initial": "$2695",
+            "monthly": "$1695"
+          },
+          "enterprise": {
+            "initial": "$3695",
+            "monthly": "$2695"
+          }
+        },
+        "USPs": [
+          "Dedicated SEO Manager",
+          "Comprehensive Market Study & Strategy",
+          "AI Product Recommendations",
+          "Human Writers for Content Generation",
+          "Regular Reporting and Monthly Meetings",
+          "Custom KPI Dashboards and Performance Metrics",
+          "Money-back Guarantee"
+        ]
+      },
+      {
+        "name": "CRO Audit + Design Service",
+        "description": "A service designed to identify and optimize conversion rates for e-commerce businesses.",
+        "USP": "Free trial to assess the effectiveness of the service."
+      }
+    ],
+    "ideal_customer_profile": {
+      "business_types": [
+        "DTC (Direct-to-Consumer) Brands",
+        "E-commerce Companies",
+        "Businesses looking to enhance online visibility and sales"
+      ],
+      "size": "Small to Large Enterprises based on SKU count (from up to 49 SKUs to over 200 SKUs)",
+      "goals": [
+        "Increase in organic traffic",
+        "Improvement in conversion rates",
+        "Revenue growth within the first year of service"
+      ],
+      "pain_points": [
+        "Low website conversion rates",
+        "Struggling with effective SEO strategies",
+        "Desire for transparent pricing without long-term contracts"
+      ]
+    }
+  }
+}
+```
