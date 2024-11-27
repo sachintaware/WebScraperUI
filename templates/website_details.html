@@ -135,10 +135,15 @@ function generateSummary() {
                 <div class="mb-3">
                     <label for="contentType" class="form-label">Content Type</label>
                     <select class="form-select" id="contentType">
-                        <option value="blog">Blog Post</option>
-                        <option value="social">Social Media Post</option>
-                        <option value="product">Product Description</option>
+                        <option value="blog">Blog</option>
+                        <option value="article">Article</option>
+                        <option value="instagram">Instagram post</option>
+                        <option value="linkedin">LinkedIn Post</option>
                     </select>
+                </div>
+                <div class="mb-3">
+                    <label for="contentTitle" class="form-label">Title/Topic</label>
+                    <input type="text" class="form-control" id="contentTitle" placeholder="Enter title or topic">
                 </div>
                 <div id="contentGenerationLoader" class="d-none">
                     <div class="d-flex justify-content-center">
