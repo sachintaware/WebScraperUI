@@ -24,10 +24,12 @@
             {% for domain, items in pagination.items|groupby('domain') %}
             <div class="accordion-item bg-dark">
                 <h2 class="accordion-header">
-                    <button class="accordion-button bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
-                        {{ domain }} <span class="badge bg-secondary ms-2">{{ items|list|length }} pages</span>
-                        <a href="{{ url_for('website_details', domain=domain) }}" class="btn btn-primary btn-sm ms-2">View Details</a>
-                    </button>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="accordion-button bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                            {{ domain }} <span class="badge bg-secondary ms-2">{{ items|list|length }} pages</span>
+                        </button>
+                        <a href="{{ url_for('website_details', domain=domain) }}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
                 </h2>
                 <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#domainsAccordion">
                     <div class="accordion-body">
