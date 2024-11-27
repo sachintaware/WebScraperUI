@@ -137,14 +137,18 @@ def scrape():
 def website_details(domain):
     page = request.args.get('page', 1, type=int)
     try:
+        app.logger.info(f"Fetching website details for domain: {domain}")
         query = ScrapedData.query.filter_by(domain=domain)
         pagination = query.order_by(ScrapedData.created_at.desc()).paginate(
             page=page, per_page=20, error_out=False
         )
         if pagination.total == 0:
+            app.logger.warning(f"No pages found for domain: {domain}")
             flash('No pages found for this domain')
             return redirect(url_for('data'))
+        app.logger.info(f"Found {pagination.total} pages for domain: {domain}")
         return render_template('website_details.html', domain=domain, pagination=pagination)
     except Exception as e:
+        app.logger.error(f"Error loading website details for domain {domain}: {str(e)}")
         flash(f'Error loading website details: {str(e)}')
         return redirect(url_for('data'))
