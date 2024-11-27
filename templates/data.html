@@ -161,35 +161,39 @@
             if (data.error) {
                 throw new Error(data.error);
             }
+            
+            const analysis = data.website_analysis;
+            if (!analysis) {
+                throw new Error('Invalid analysis format');
+            }
+
             resultDiv.innerHTML = `
                 <div class="analysis-section mb-3">
                     <h6>Website Style & Tone:</h6>
-                    <p class="white-space-pre-wrap">Style: ${data.website_analysis?.style || 'Not available'}
-Tone: ${data.website_analysis?.tone || 'Not available'}
-Theme: ${data.website_analysis?.theme || 'Not available'}</p>
+                    <p class="white-space-pre-wrap">Style: ${analysis.style || 'Not available'}
+Tone: ${analysis.tone || 'Not available'}
+Theme: ${analysis.theme || 'Not available'}</p>
                 </div>
                 <div class="analysis-section mb-3">
                     <h6>Products/Services & USPs:</h6>
-                    <p class="white-space-pre-wrap">${data.website_analysis?.products_services?.map(product => 
-                        `${product.name}
-Description: ${product.description || ''}
+                    <p class="white-space-pre-wrap">${(analysis.products_services || []).map(product => `
+${product.name || ''}
+${product.description ? 'Description: ' + product.description : ''}
 ${product.USPs ? 'USPs:\n- ' + product.USPs.join('\n- ') : ''}
-${product.USP || ''}
-`
-                    ).join('\n') || 'Not available'}</p>
+${product.USP || ''}`).join('\n\n') || 'Not available'}</p>
                 </div>
                 <div class="analysis-section">
                     <h6>Ideal Customer Profile (ICP):</h6>
-                    <p class="white-space-pre-wrap">Business Types:
-- ${data.website_analysis?.ideal_customer_profile?.business_types?.join('\n- ') || 'Not available'}
+                    <p class="white-space-pre-wrap">${analysis.ideal_customer_profile ? `Business Types:
+${analysis.ideal_customer_profile.business_types ? '- ' + analysis.ideal_customer_profile.business_types.join('\n- ') : 'Not available'}
 
-Size: ${data.website_analysis?.ideal_customer_profile?.size || 'Not available'}
+Size: ${analysis.ideal_customer_profile.size || 'Not available'}
 
 Goals:
-- ${data.website_analysis?.ideal_customer_profile?.goals?.join('\n- ') || 'Not available'}
+${analysis.ideal_customer_profile.goals ? '- ' + analysis.ideal_customer_profile.goals.join('\n- ') : 'Not available'}
 
 Pain Points:
-- ${data.website_analysis?.ideal_customer_profile?.pain_points?.join('\n- ') || 'Not available'}</p>
+${analysis.ideal_customer_profile.pain_points ? '- ' + analysis.ideal_customer_profile.pain_points.join('\n- ') : 'Not available'}` : 'Not available'}</p>
                 </div>
             `;
         })
