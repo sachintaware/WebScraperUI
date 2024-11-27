@@ -17,12 +17,11 @@ class ContentAnalyzer:
                        "1. Website style, tone, and theme\n"
                        "2. Products/Services offered and their USPs\n"
                        "3. Ideal Customer Profile (ICP)",
-            expected_output={
-                "Website Style & Tone": "Detailed analysis of website's style, tone, and overall theme",
-                "Products/Services & USPs": "List and analysis of products/services and their unique selling points",
-                "Ideal Customer Profile (ICP)": "Description of the ideal customer profile"
-            },
-            context={"content": content, "url": url},
+            expected_output="Provide analysis in JSON format with the following structure: {'Website Style & Tone': 'analysis', 'Products/Services & USPs': 'analysis', 'Ideal Customer Profile (ICP)': 'analysis'}",
+            context=[
+                f"URL: {url}",
+                f"Content: {content}"
+            ],
             agent=self.analyzer_agent
         )
 
@@ -34,6 +33,18 @@ class ContentAnalyzer:
 
         try:
             result = crew.kickoff()
+            # Parse the result string into dictionary if it's a string
+            if isinstance(result, str):
+                try:
+                    import json
+                    result = json.loads(result)
+                except:
+                    # If parsing fails, create a structured response
+                    return {
+                        "Website Style & Tone": result,
+                        "Products/Services & USPs": "",
+                        "Ideal Customer Profile (ICP)": ""
+                    }
             return result
         except Exception as e:
             raise Exception(f"Analysis failed: {str(e)}")
