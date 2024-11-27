@@ -21,6 +21,8 @@ class ContentAnalyzer:
                 "1. Website style, tone, and theme\n"
                 "2. Products/Services offered and their USPs\n"
                 "3. Ideal Customer Profile (ICP)\n\n"
+                "Content to analyze:\n"
+                f"{content}\n\n"  # Include content directly in description
                 "Format the response in the following JSON structure:\n"
                 '{"website_analysis": {'
                 '"style": "Professional and Direct",'
@@ -36,28 +38,22 @@ class ContentAnalyzer:
                 '"size": "Size description",'
                 '"goals": ["Goal1", "Goal2"],'
                 '"pain_points": ["Point1", "Point2"]'
-                '}}}'
-            ),
-            expected_output="JSON string containing website analysis in the specified format",
-            context=[
-                {"content": content, "url": url}
-            ],
-            agent=self.analyzer_agent
-        )
+                '}}}'),
+            expected_output=
+            "JSON string containing website analysis in the specified format",
+            agent=self.analyzer_agent)
 
-        crew = Crew(
-            agents=[self.analyzer_agent],
-            tasks=[analysis_task],
-            verbose=True
-        )
+        crew = Crew(agents=[self.analyzer_agent],
+                    tasks=[analysis_task],
+                    verbose=True)
 
         try:
             result = crew.kickoff()
-            
+
             # Handle different result formats
             if isinstance(result, dict):
                 return result
-                
+
             result_text = str(result)
             if hasattr(result, 'final_answer'):
                 result_text = str(result.final_answer)
@@ -65,7 +61,7 @@ class ContentAnalyzer:
             # Try to extract JSON from the response
             import json
             import re
-            
+
             # Look for JSON-like content in the string
             json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
             if json_match:
