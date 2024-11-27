@@ -4,6 +4,8 @@ from werkzeug.security import check_password_hash
 from app import app, db, login_manager
 from models import User, ScrapedData
 from scraper import parse_sitemap, scrape_website, scrape_multiple_pages
+from analyzer import ContentAnalyzer
+from flask import jsonify
 from models import User, ScrapedData
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
@@ -169,5 +171,27 @@ def website_details(domain):
         return render_template('website_details.html', domain=domain, pagination=pagination)
     except Exception as e:
         app.logger.error(f"Error loading website details for domain {domain}: {str(e)}")
+
+@app.route('/analyze/<int:content_id>', methods=['POST'])
+@login_required
+def analyze_content(content_id):
+    try:
+        content = ScrapedData.query.get_or_404(content_id)
+        analyzer = ContentAnalyzer()
+        analysis = analyzer.analyze_content(content.content, content.url)
+        
+        # Save analysis results
+        new_analysis = ContentAnalysis(
+            scraped_data_id=content_id,
+            style_tone=analysis.get('style_tone'),
+            products_services=analysis.get('products_services'),
+            icp=analysis.get('icp')
+        )
+        db.session.add(new_analysis)
+        db.session.commit()
+        
+        return jsonify(analysis)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
         flash(f'Error loading website details: {str(e)}')
         return redirect(url_for('data'))

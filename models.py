@@ -16,3 +16,11 @@ class ScrapedData(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='success')
     domain = db.Column(db.String(200))
+
+class ContentAnalysis(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    scraped_data_id = db.Column(db.Integer, db.ForeignKey('scraped_data.id'))
+    style_tone = db.Column(db.Text)
+    products_services = db.Column(db.Text)
+    icp = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

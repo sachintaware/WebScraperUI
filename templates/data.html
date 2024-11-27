@@ -53,6 +53,9 @@
                                             <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#contentModal{{ item.id }}">
                                                 <i class="bi bi-eye"></i> View Content
                                             </button>
+                                            <button type="button" class="btn btn-sm btn-primary ms-2" onclick="analyzeContent({{ item.id }})">
+                                                <i class="bi bi-graph-up"></i> Analyze
+                                            </button>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -105,4 +108,62 @@
     </div>
 </div>
 {% endfor %}
+
+<!-- Analysis Modals -->
+{% for item in pagination.items %}
+<div class="modal fade" id="analysisModal{{ item.id }}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Content Analysis</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="analysisResult{{ item.id }}">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Analyzing...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Analysis JavaScript -->
+<script>
+function analyzeContent(contentId) {
+    const modal = new bootstrap.Modal(document.getElementById(`analysisModal${contentId}`));
+    modal.show();
+    
+    fetch(`/analyze/${contentId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultDiv = document.getElementById(`analysisResult${contentId}`);
+        resultDiv.innerHTML = `
+            <div class="analysis-section mb-3">
+                <h6>Website Style & Tone:</h6>
+                <p>${data.style_tone}</p>
+            </div>
+            <div class="analysis-section mb-3">
+                <h6>Products/Services & USPs:</h6>
+                <p>${data.products_services}</p>
+            </div>
+            <div class="analysis-section">
+                <h6>Ideal Customer Profile (ICP):</h6>
+                <p>${data.icp}</p>
+            </div>
+        `;
+    })
+    .catch(error => {
+        document.getElementById(`analysisResult${contentId}`).innerHTML = 
+            `<div class="alert alert-danger">Error: ${error.message}</div>`;
+    });
+}
+</script>
 {% endblock %}
