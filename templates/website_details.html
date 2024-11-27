@@ -175,14 +175,20 @@ function openGenerateContentModal() {
 }
 
 function generateContent() {
-    const contentType = document.getElementById('contentType').value;
-    const contentTitle = document.getElementById('contentTitle').value;
+    const contentType = document.getElementById('contentType');
+    const contentTitle = document.getElementById('contentTitle');
     const loader = document.getElementById('contentGenerationLoader');
     const resultDiv = document.getElementById('generatedContent');
     const errorDiv = document.getElementById('contentError');
     const generateButton = document.querySelector('#contentGenerationModal .btn-primary');
 
-    if (!contentTitle.trim()) {
+    // Check if all required elements exist
+    if (!contentType || !contentTitle || !loader || !resultDiv || !errorDiv || !generateButton) {
+        console.error('Required elements not found');
+        return;
+    }
+
+    if (!contentTitle.value.trim()) {
         errorDiv.textContent = 'Please enter a title/topic';
         errorDiv.classList.remove('d-none');
         return;
@@ -200,8 +206,8 @@ function generateContent() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-            content_type: contentType,
-            title: contentTitle 
+            content_type: contentType.value,
+            title: contentTitle.value 
         })
     })
     .then(response => response.json())
@@ -211,6 +217,10 @@ function generateContent() {
         }
         
         const contentResult = document.getElementById('contentResult');
+        if (!contentResult) {
+            throw new Error('Content result element not found');
+        }
+        
         contentResult.textContent = data.content;
         resultDiv.classList.remove('d-none');
     })
