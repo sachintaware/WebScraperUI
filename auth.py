@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
 from app import app, db
-from models import User, ScrapedData
+from models import User, ScrapedData, DomainSummary
 from scraper import scrape_website, scrape_multiple_pages, parse_sitemap
 from analyzer import ContentAnalyzer
 import logging
@@ -133,7 +133,13 @@ def website_details(domain):
         flash('No data found for this domain')
         return redirect(url_for('data'))
     
-    return render_template('website_details.html', domain=domain, items=items)
+    # Get stored domain summary if exists
+    domain_summary = DomainSummary.query.filter_by(domain=domain).first()
+    
+    return render_template('website_details.html', 
+                         domain=domain, 
+                         items=items, 
+                         domain_summary=domain_summary)
 
 @app.route('/domain_summary/<domain>')
 @login_required
@@ -179,6 +185,18 @@ def domain_summary(domain):
         if icp_data.get('pain_points'): 
             icp.append("Pain Points:\n- " + "\n- ".join(icp_data['pain_points']))
 
+        # Store or update the domain summary
+        domain_summary = DomainSummary.query.filter_by(domain=domain).first()
+        if not domain_summary:
+            domain_summary = DomainSummary(domain=domain)
+        
+        domain_summary.style_tone = '\n'.join(style_tone)
+        domain_summary.products_services = '\n\n'.join(products_services)
+        domain_summary.icp = '\n\n'.join(icp)
+        
+        db.session.add(domain_summary)
+        db.session.commit()
+        
         return jsonify({
             'style_tone': style_tone,
             'products_services': products_services,

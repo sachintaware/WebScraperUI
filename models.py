@@ -24,3 +24,12 @@ class ContentAnalysis(db.Model):
     products_services = db.Column(db.Text)
     icp = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class DomainSummary(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    domain = db.Column(db.String(200), unique=True, nullable=False)
+    style_tone = db.Column(db.Text)
+    products_services = db.Column(db.Text)
+    icp = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

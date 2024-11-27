@@ -5,9 +5,14 @@
     <div class="card-body">
         <h2 class="card-title">Content Summary</h2>
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <button id="generateSummaryBtn" class="btn btn-primary" onclick="generateSummary()">
-                <i class="bi bi-file-text"></i> Generate Summary
-            </button>
+            <div>
+                <button id="generateSummaryBtn" class="btn btn-primary" onclick="generateSummary()">
+                    <i class="bi bi-file-text"></i> Generate Summary
+                </button>
+                {% if domain_summary %}
+                <small class="text-muted ms-2">Last updated: {{ domain_summary.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                {% endif %}
+            </div>
             <a href="{{ url_for('data') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Overview
             </a>
@@ -18,10 +23,29 @@
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Analyzing...</span>
                 </div>
+{% if domain_summary %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const styleToneContent = document.getElementById('styleToneContent');
+    const productsServicesContent = document.getElementById('productsServicesContent');
+    const icpContent = document.getElementById('icpContent');
+    
+    if (styleToneContent) {
+        styleToneContent.textContent = {{ domain_summary.style_tone|tojson|safe }};
+    }
+    if (productsServicesContent) {
+        productsServicesContent.textContent = {{ domain_summary.products_services|tojson|safe }};
+    }
+    if (icpContent) {
+        icpContent.textContent = {{ domain_summary.icp|tojson|safe }};
+    }
+});
+</script>
+{% endif %}
             </div>
         </div>
 
-        <div id="summaryContent" class="d-none">
+        <div id="summaryContent" class="{% if not domain_summary %}d-none{% endif %}">
             <div class="analysis-section mb-4">
                 <h5 class="mb-3">Website Style & Tone</h5>
                 <div id="styleToneContent" class="white-space-pre-wrap"></div>
