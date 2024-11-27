@@ -24,6 +24,7 @@
                         <th>URL</th>
                         <th>Date</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,6 +35,11 @@
                         <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td><span class="badge bg-{{ 'success' if item.status == 'success' else 'danger' }}">
                             {{ item.status }}</span></td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#contentModal{{ item.id }}">
+                                View Content
+                            </button>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -57,4 +63,22 @@
         {% endif %}
     </div>
 </div>
+
+{% for item in pagination.items %}
+<div class="modal fade" id="contentModal{{ item.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ item.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="content-wrapper">
+                    {{ item.content|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}
