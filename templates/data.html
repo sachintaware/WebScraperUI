@@ -9,12 +9,33 @@
             <div class="input-group">
                 <input type="text" class="form-control" name="search" value="{{ search }}"
                        placeholder="Search in title or content...">
+                {% if selected_domain %}
+                <input type="hidden" name="domain" value="{{ selected_domain }}">
+                {% endif %}
                 <button class="btn btn-primary" type="submit">Search</button>
-                {% if search %}
+                {% if search or selected_domain %}
                 <a href="{{ url_for('data') }}" class="btn btn-secondary">Clear</a>
                 {% endif %}
             </div>
         </form>
+
+        <!-- Domain Filter -->
+        <div class="domain-group mb-4">
+            <h3>Domains</h3>
+            <div class="list-group">
+                <a href="{{ url_for('data', search=search) }}" 
+                   class="list-group-item list-group-item-action {% if not selected_domain %}active{% endif %}">
+                    All Domains
+                </a>
+                {% for domain, count in domains %}
+                <a href="{{ url_for('data', domain=domain, search=search) }}" 
+                   class="list-group-item list-group-item-action {% if selected_domain == domain %}active{% endif %}">
+                    {{ domain }}
+                    <span class="page-count">{{ count }} pages</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
 
         <div class="table-responsive">
             <table class="table">
@@ -22,6 +43,7 @@
                     <tr>
                         <th>Title</th>
                         <th>URL</th>
+                        <th>Domain</th>
                         <th>Date</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -32,6 +54,7 @@
                     <tr>
                         <td>{{ item.title }}</td>
                         <td><a href="{{ item.url }}" target="_blank">{{ item.url[:50] }}...</a></td>
+                        <td>{{ item.domain }}</td>
                         <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td><span class="badge bg-{{ 'success' if item.status == 'success' else 'danger' }}">
                             {{ item.status }}</span></td>
@@ -52,7 +75,7 @@
                 {% for page in pagination.iter_pages() %}
                     {% if page %}
                         <li class="page-item {{ 'active' if page == pagination.page else '' }}">
-                            <a class="page-link" href="{{ url_for('data', page=page, search=search) }}">{{ page }}</a>
+                            <a class="page-link" href="{{ url_for('data', page=page, search=search, domain=selected_domain) }}">{{ page }}</a>
                         </li>
                     {% else %}
                         <li class="page-item disabled"><span class="page-link">...</span></li>

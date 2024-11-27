@@ -48,7 +48,18 @@ def data():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
     
+    # Get unique domains with page counts
+    domains = db.session.query(
+        ScrapedData.domain,
+        db.func.count(ScrapedData.id).label('page_count')
+    ).group_by(ScrapedData.domain).all()
+    
+    # Get pages for selected domain
+    selected_domain = request.args.get('domain')
     query = ScrapedData.query
+    
+    if selected_domain:
+        query = query.filter_by(domain=selected_domain)
     if search:
         query = query.filter(
             (ScrapedData.title.ilike(f'%{search}%')) |
@@ -59,7 +70,13 @@ def data():
         page=page, per_page=10, error_out=False
     )
     
-    return render_template('data.html', pagination=pagination, search=search)
+    return render_template(
+        'data.html',
+        pagination=pagination,
+        search=search,
+        domains=domains,
+        selected_domain=selected_domain
+    )
 
 @app.route('/scrape', methods=['POST'])
 @login_required
@@ -92,7 +109,8 @@ def scrape():
                 url=result['url'],
                 title=result['title'],
                 content=result['content'],
-                status=result.get('status', 'success')
+                status=result.get('status', 'success'),
+                domain=result.get('domain', '')
             )
             db.session.add(data)
             if result.get('status') == 'success':

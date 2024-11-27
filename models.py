@@ -15,3 +15,4 @@ class ScrapedData(db.Model):
     content = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='success')
+    domain = db.Column(db.String(200))

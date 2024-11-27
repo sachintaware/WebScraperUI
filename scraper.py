@@ -66,17 +66,25 @@ def scrape_website(url):
             content = main_content.get_text(separator=' ', strip=True)
         
         logger.info(f"Successfully scraped URL: {url}")
+        parsed_url = urlparse(url)
+        domain = parsed_url.netloc
+        
         return {
             'title': title,
             'content': content[:10000],  # Limit content length
-            'status': 'success'
+            'status': 'success',
+            'domain': domain
         }
     except Exception as e:
         logger.error(f"Error scraping URL {url}: {str(e)}")
+        parsed_url = urlparse(url)
+        domain = parsed_url.netloc
+        
         return {
             'title': url,
             'content': f'Error: {str(e)}',
-            'status': 'error'
+            'status': 'error',
+            'domain': domain
         }
 
 def scrape_multiple_pages(urls):
