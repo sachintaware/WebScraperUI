@@ -15,21 +15,32 @@
 }
 
 .content-wrapper {
-    max-height: 500px;
+    max-height: 70vh;
     overflow-y: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.content-text {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
 }
 
 .domain-group {
-    margin-bottom: 2rem;
+    background: rgba(0,0,0,0.02);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .domain-header {
-    background-color: rgba(0,0,0,0.1);
-    padding: 1rem;
+    border-bottom: 2px solid rgba(0,0,0,0.1);
     margin-bottom: 1rem;
-    border-radius: 0.25rem;
+    padding-bottom: 0.5rem;
 }
 
 .page-count {

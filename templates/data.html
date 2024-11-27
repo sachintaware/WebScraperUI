@@ -59,8 +59,8 @@
                         <td><span class="badge bg-{{ 'success' if item.status == 'success' else 'danger' }}">
                             {{ item.status }}</span></td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#contentModal{{ item.id }}">
-                                View Content
+                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#contentModal{{ item.id }}">
+                                <i class="bi bi-eye"></i> View Content
                             </button>
                         </td>
                     </tr>
@@ -96,8 +96,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="content-wrapper">
-                    {{ item.content|safe }}
+                <div class="content-wrapper bg-light p-3 rounded">
+                    <div class="mb-3">
+                        <strong>URL:</strong> <a href="{{ item.url }}" target="_blank">{{ item.url }}</a>
+                    </div>
+                    <div class="content-text">
+                        {{ item.content|safe }}
+                    </div>
                 </div>
             </div>
         </div>
