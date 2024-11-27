@@ -254,3 +254,5 @@ def domain_summary(domain):
     except Exception as e:
         app.logger.error(f"Error generating domain summary for {domain}: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+
