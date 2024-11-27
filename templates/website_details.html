@@ -3,46 +3,14 @@
 {% block content %}
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">Scraped Data</h2>
-        
-        <form class="mb-4" method="GET">
-            <div class="input-group">
-                <input type="text" class="form-control" name="search" value="{{ search }}"
-                       placeholder="Search in title or content...">
-                {% if selected_domain %}
-                <input type="hidden" name="domain" value="{{ selected_domain }}">
-                {% endif %}
-                <button class="btn btn-primary" type="submit">Search</button>
-                {% if search or selected_domain %}
-                <a href="{{ url_for('data') }}" class="btn btn-secondary">Clear</a>
-                {% endif %}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="card-title mb-0">{{ domain }}</h2>
+                <p class="text-muted">Total Pages: {{ pagination.total }}</p>
             </div>
-        </form>
-
-        <!-- Domain Filter -->
-        <div class="domain-group mb-4">
-            <h3>Domains</h3>
-            <div class="list-group">
-                <a href="{{ url_for('data', search=search) }}" 
-                   class="list-group-item list-group-item-action {% if not selected_domain %}active{% endif %}">
-                    All Domains
-                </a>
-                {% for domain, count in domains %}
-                <a href="{{ url_for('data', domain=domain, search=search) }}" 
-                   class="list-group-item list-group-item-action {% if selected_domain == domain %}active{% endif %}">
-                    <div class="d-flex justify-content-between align-items-center w-100">
-                        <span>{{ domain }}</span>
-                        <div>
-                            <span class="page-count me-2">{{ count }} pages</span>
-                            <a href="{{ url_for('website_details', domain=domain) }}" 
-                               class="btn btn-sm btn-primary">
-                                <i class="bi bi-list"></i> View Pages
-                            </a>
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
+            <a href="{{ url_for('data') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Overview
+            </a>
         </div>
 
         <div class="table-responsive">
@@ -51,7 +19,6 @@
                     <tr>
                         <th>Title</th>
                         <th>URL</th>
-                        <th>Domain</th>
                         <th>Date</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -62,7 +29,6 @@
                     <tr>
                         <td>{{ item.title }}</td>
                         <td><a href="{{ item.url }}" target="_blank">{{ item.url[:50] }}...</a></td>
-                        <td>{{ item.domain }}</td>
                         <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td><span class="badge bg-{{ 'success' if item.status == 'success' else 'danger' }}">
                             {{ item.status }}</span></td>
@@ -83,7 +49,7 @@
                 {% for page in pagination.iter_pages() %}
                     {% if page %}
                         <li class="page-item {{ 'active' if page == pagination.page else '' }}">
-                            <a class="page-link" href="{{ url_for('data', page=page, search=search, domain=selected_domain) }}">{{ page }}</a>
+                            <a class="page-link" href="{{ url_for('website_details', domain=domain, page=page) }}">{{ page }}</a>
                         </li>
                     {% else %}
                         <li class="page-item disabled"><span class="page-link">...</span></li>

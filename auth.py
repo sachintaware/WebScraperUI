@@ -130,3 +130,14 @@ def scrape():
         flash(f'Error scraping website: {str(e)}')
     
     return redirect(url_for('dashboard'))
+
+
+@app.route('/website/<domain>')
+@login_required
+def website_details(domain):
+    page = request.args.get('page', 1, type=int)
+    query = ScrapedData.query.filter_by(domain=domain)
+    pagination = query.order_by(ScrapedData.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    return render_template('website_details.html', domain=domain, pagination=pagination)
