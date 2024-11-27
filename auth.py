@@ -136,8 +136,15 @@ def scrape():
 @login_required
 def website_details(domain):
     page = request.args.get('page', 1, type=int)
-    query = ScrapedData.query.filter_by(domain=domain)
-    pagination = query.order_by(ScrapedData.created_at.desc()).paginate(
-        page=page, per_page=20, error_out=False
-    )
-    return render_template('website_details.html', domain=domain, pagination=pagination)
+    try:
+        query = ScrapedData.query.filter_by(domain=domain)
+        pagination = query.order_by(ScrapedData.created_at.desc()).paginate(
+            page=page, per_page=20, error_out=False
+        )
+        if pagination.total == 0:
+            flash('No pages found for this domain')
+            return redirect(url_for('data'))
+        return render_template('website_details.html', domain=domain, pagination=pagination)
+    except Exception as e:
+        flash(f'Error loading website details: {str(e)}')
+        return redirect(url_for('data'))
