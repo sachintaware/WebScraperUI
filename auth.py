@@ -185,12 +185,72 @@ def analyze_content(content_id):
     try:
         content = ScrapedData.query.get_or_404(content_id)
         analyzer = ContentAnalyzer()
-        analysis_result = analyzer.analyze_content(content.content, content.url)
-        
-        if not isinstance(analysis_result, dict):
-            raise Exception("Invalid analysis result format")
-            
-        return jsonify(analysis_result)
+        analysis_result = analyzer.analyze_content(content.content,
+                                                   content.url)
+        # Restructure the analysis result to match the expected format
+        analysis = {
+            'style_tone':
+            analysis_result.get('website_style', {}).get('tone', '') +
+            '\nTheme: ' +
+            analysis_result.get('website_style', {}).get('theme', ''),
+            'products_services':
+            '\n'.join([
+                f"• {product['name']}: " + '\n  USPs: ' +
+                '\n  - '.join(product['usps'])
+                for product in analysis_result.get('products_services', [])
+            ]),
+            'icp':
+            (f"Description: {analysis_result.get('ideal_customer_profile', {}).get('description', '')}\n\n"
+             + f"Key Attributes:\n- " + '\n- '.join(
+                 analysis_result.get('ideal_customer_profile', {}).get(
+                     'key_attributes', [])))
+        }
+        # Save analysis results
+        new_analysis = ContentAnalysis(
+            scraped_data_id=content_id,
+            style_tone=analysis['style_tone'],
+            products_services=analysis['products_services'],
+            icp=analysis['icp'])
+        db.session.add(new_analysis)
+        db.session.commit()
+        return jsonify(analysis)
     except Exception as e:
         app.logger.error(f"Analysis error for content {content_id}: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+        
+
+@app.route('/domain_summary/<domain>')
+@login_required
+def domain_summary(domain):
+    try:
+        # Get all content analyses for the domain
+        analyses = db.session.query(ContentAnalysis)\
+            .join(ScrapedData)\
+            .filter(ScrapedData.domain == domain)\
+            .all()
+        
+        if not analyses:
+            return jsonify({'error': 'No analyses found for this domain'}), 404
+        
+        # Aggregate the analyses
+        summary = {
+            'style_tone': set(),
+            'products_services': set(),
+            'icp': set()
+        }
+        
+        for analysis in analyses:
+            if analysis.style_tone:
+                summary['style_tone'].add(analysis.style_tone)
+            if analysis.products_services:
+                summary['products_services'].add(analysis.products_services)
+            if analysis.icp:
+                summary['icp'].add(analysis.icp)
+        
+        # Convert sets to lists for JSON serialization
+        summary = {k: list(v) for k, v in summary.items()}
+        
+        return jsonify(summary)
+    except Exception as e:
+        app.logger.error(f"Error generating domain summary for {domain}: {str(e)}")
         return jsonify({'error': str(e)}), 500
