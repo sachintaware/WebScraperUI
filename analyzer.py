@@ -17,13 +17,30 @@ class ContentAnalyzer:
     def analyze_content(self, content, url):
         analysis_task = Task(
             description=(
-                f"Analyze the following content from {url} and provide insights about:\n"
-                "1. Website style, tone, and theme\n"
-                "2. Products/Services offered and their USPs\n"
-                "3. Ideal Customer Profile (ICP)"
+                f"Analyze the following content from {url} and provide insights in JSON format with the following structure:\n"
+                "{\n"
+                '  "website_analysis": {\n'
+                '    "style": "style description",\n'
+                '    "tone": "tone description",\n'
+                '    "theme": "theme description",\n'
+                '    "products_services": [\n'
+                '      {\n'
+                '        "name": "product name",\n'
+                '        "description": "description",\n'
+                '        "USPs": ["USP1", "USP2"]\n'
+                '      }\n'
+                '    ],\n'
+                '    "ideal_customer_profile": {\n'
+                '      "business_types": ["type1", "type2"],\n'
+                '      "size": "size description",\n'
+                '      "goals": ["goal1", "goal2"],\n'
+                '      "pain_points": ["point1", "point2"]\n'
+                '    }\n'
+                '  }\n'
+                '}'
             ),
-            expected_output="JSON string containing website analysis",
-            context=[f"Content to analyze: {content}", f"URL: {url}"],
+            expected_output="Analysis in JSON format",
+            context=content,
             agent=self.analyzer_agent
         )
 
@@ -36,34 +53,30 @@ class ContentAnalyzer:
         try:
             result = crew.kickoff()
             
-            # Extract the result text
-            result_text = result
-            if hasattr(result, 'final_answer'):
-                result_text = result.final_answer
-            elif isinstance(result, dict):
-                return result  # Already in correct format
+            # Handle different result formats
+            if isinstance(result, dict):
+                return result
                 
-            # Try to find and parse JSON in the response
+            result_text = str(result)
+            if hasattr(result, 'final_answer'):
+                result_text = str(result.final_answer)
+
+            # Try to extract JSON from the response
             import json
             import re
             
-            # First try direct JSON parsing
-            try:
-                return json.loads(result_text)
-            except json.JSONDecodeError:
-                # Look for JSON-like content in the string
-                json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
-                if json_match:
-                    try:
-                        return json.loads(json_match.group())
-                    except json.JSONDecodeError:
-                        pass
-            
-            # If we couldn't parse JSON, create a structured response
-            lines = result_text.split('\n')
-            formatted_result = {
+            # Look for JSON-like content in the string
+            json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
+            if json_match:
+                try:
+                    return json.loads(json_match.group())
+                except json.JSONDecodeError:
+                    pass
+
+            # If no JSON found, create a structured response from the text
+            return {
                 "website_analysis": {
-                    "style": "",
+                    "style": result_text,
                     "tone": "",
                     "theme": "",
                     "products_services": [],
@@ -75,20 +88,5 @@ class ContentAnalyzer:
                     }
                 }
             }
-            
-            # Try to extract information from the text
-            current_section = None
-            for line in lines:
-                line = line.strip()
-                if 'style' in line.lower():
-                    formatted_result['website_analysis']['style'] = line.split(':', 1)[1].strip() if ':' in line else line
-                elif 'tone' in line.lower():
-                    formatted_result['website_analysis']['tone'] = line.split(':', 1)[1].strip() if ':' in line else line
-                elif 'theme' in line.lower():
-                    formatted_result['website_analysis']['theme'] = line.split(':', 1)[1].strip() if ':' in line else line
-                    
-            return formatted_result
-            
         except Exception as e:
-            app.logger.error(f"Analysis error: {str(e)}")
             raise Exception(f"Analysis failed: {str(e)}")
