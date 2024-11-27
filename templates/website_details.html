@@ -48,6 +48,12 @@ function generateSummary() {
     const summaryContent = document.getElementById('summaryContent');
     const errorMessage = document.getElementById('errorMessage');
     const generateButton = document.getElementById('generateSummaryBtn');
+    
+    // Ensure all elements exist before proceeding
+    if (!summaryLoader || !summaryContent || !errorMessage || !generateButton) {
+        console.error('Required elements not found');
+        return;
+    }
 
     // Show loader and disable button
     summaryLoader.classList.remove('d-none');
@@ -62,12 +68,20 @@ function generateSummary() {
                 throw new Error(data.error);
             }
 
-            // Update content sections
-            document.getElementById('styleToneContent').textContent = data.style_tone.join('\n');
-            document.getElementById('productsServicesContent').textContent = data.products_services.join('\n\n');
-            document.getElementById('icpContent').textContent = data.icp.join('\n\n');
+            const styleToneContent = document.getElementById('styleToneContent');
+            const productsServicesContent = document.getElementById('productsServicesContent');
+            const icpContent = document.getElementById('icpContent');
 
-            // Show content
+            if (styleToneContent) {
+                styleToneContent.textContent = data.style_tone.join('\n');
+            }
+            if (productsServicesContent) {
+                productsServicesContent.textContent = data.products_services.join('\n\n');
+            }
+            if (icpContent) {
+                icpContent.textContent = data.icp.join('\n\n');
+            }
+
             summaryContent.classList.remove('d-none');
         })
         .catch(error => {
@@ -75,7 +89,6 @@ function generateSummary() {
             errorMessage.classList.remove('d-none');
         })
         .finally(() => {
-            // Hide loader and enable button
             summaryLoader.classList.add('d-none');
             generateButton.disabled = false;
         });

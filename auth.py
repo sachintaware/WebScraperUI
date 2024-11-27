@@ -144,49 +144,40 @@ def domain_summary(domain):
         if not items:
             return jsonify({'error': 'No data found for this domain'})
 
-        # Combine all content
-        combined_content = '\n'.join([item.content for item in items if item.content])
+        # Combine all content with proper separation
+        combined_content = "\n\n=== Page Break ===\n\n".join(
+            [f"Page: {item.url}\n\n{item.content}" for item in items if item.content]
+        )
         
-        # Initialize analyzer
+        # Initialize analyzer with combined content
         analyzer = ContentAnalyzer()
-        
-        # Get analysis
         analysis = analyzer.analyze_content(combined_content, domain)
         
-        # Extract relevant sections
+        # Format response for frontend
         style_tone = []
-        if analysis.get('website_analysis'):
-            wa = analysis['website_analysis']
-            if wa.get('style'):
-                style_tone.append(f"Style: {wa['style']}")
-            if wa.get('tone'):
-                style_tone.append(f"Tone: {wa['tone']}")
-            if wa.get('theme'):
-                style_tone.append(f"Theme: {wa['theme']}")
+        wa = analysis.get('website_analysis', {})
+        if wa.get('style'): style_tone.append(f"Style: {wa['style']}")
+        if wa.get('tone'): style_tone.append(f"Tone: {wa['tone']}")
+        if wa.get('theme'): style_tone.append(f"Theme: {wa['theme']}")
 
         products_services = []
-        if analysis.get('website_analysis', {}).get('products_services'):
-            for product in analysis['website_analysis']['products_services']:
-                product_info = []
-                if product.get('name'):
-                    product_info.append(f"Product/Service: {product['name']}")
-                if product.get('description'):
-                    product_info.append(f"Description: {product['description']}")
-                if product.get('USPs'):
-                    product_info.append("USPs:\n- " + "\n- ".join(product['USPs']))
-                products_services.append("\n".join(product_info))
+        for product in wa.get('products_services', []):
+            product_info = []
+            if product.get('name'): product_info.append(f"Product/Service: {product['name']}")
+            if product.get('description'): product_info.append(f"Description: {product['description']}")
+            if product.get('USPs'): product_info.append("USPs:\n- " + "\n- ".join(product['USPs']))
+            if product_info: products_services.append("\n".join(product_info))
 
+        icp_data = wa.get('ideal_customer_profile', {})
         icp = []
-        if analysis.get('website_analysis', {}).get('ideal_customer_profile'):
-            icp_data = analysis['website_analysis']['ideal_customer_profile']
-            if icp_data.get('business_types'):
-                icp.append("Business Types:\n- " + "\n- ".join(icp_data['business_types']))
-            if icp_data.get('size'):
-                icp.append(f"Size: {icp_data['size']}")
-            if icp_data.get('goals'):
-                icp.append("Goals:\n- " + "\n- ".join(icp_data['goals']))
-            if icp_data.get('pain_points'):
-                icp.append("Pain Points:\n- " + "\n- ".join(icp_data['pain_points']))
+        if icp_data.get('business_types'): 
+            icp.append("Business Types:\n- " + "\n- ".join(icp_data['business_types']))
+        if icp_data.get('size'): 
+            icp.append(f"Size: {icp_data['size']}")
+        if icp_data.get('goals'): 
+            icp.append("Goals:\n- " + "\n- ".join(icp_data['goals']))
+        if icp_data.get('pain_points'): 
+            icp.append("Pain Points:\n- " + "\n- ".join(icp_data['pain_points']))
 
         return jsonify({
             'style_tone': style_tone,
