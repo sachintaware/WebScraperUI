@@ -65,3 +65,26 @@
 .accordion-body {
     background-color: #212529;
 }
+
+/* Add this to the end of static/css/custom.css */
+.white-space-pre-wrap {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: inherit;
+    color: #e9ecef;  /* This matches the existing light text color in dark theme */
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+/* You might also want to add these complementary styles */
+.analysis-section {
+    padding: 1rem;
+    background-color: #212529;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.analysis-section h6 {
+    color: #fff;
+    margin-bottom: 0.5rem;
+}

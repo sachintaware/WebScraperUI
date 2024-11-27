@@ -132,57 +132,57 @@
 
 <!-- Analysis JavaScript -->
 <script>
-function analyzeContent(contentId) {
-    const modal = new bootstrap.Modal(document.getElementById(`analysisModal${contentId}`));
-    modal.show();
-    
-    const resultDiv = document.getElementById(`analysisResult${contentId}`);
-    resultDiv.innerHTML = `
-        <div class="d-flex justify-content-center">
-            <div class="spinner-border text-light" role="status">
-                <span class="visually-hidden">Analyzing...</span>
-            </div>
-        </div>
-    `;
-    
-    fetch(`/analyze/${contentId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Analysis failed');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.error) {
-            throw new Error(data.error);
-        }
+    function analyzeContent(contentId) {
+        const modal = new bootstrap.Modal(document.getElementById(`analysisModal${contentId}`));
+        modal.show();
+
+        const resultDiv = document.getElementById(`analysisResult${contentId}`);
         resultDiv.innerHTML = `
-            <div class="analysis-section mb-3">
-                <h6>Website Style & Tone:</h6>
-                <p>${data.style_tone || 'Not available'}</p>
-            </div>
-            <div class="analysis-section mb-3">
-                <h6>Products/Services & USPs:</h6>
-                <p>${data.products_services || 'Not available'}</p>
-            </div>
-            <div class="analysis-section">
-                <h6>Ideal Customer Profile (ICP):</h6>
-                <p>${data.icp || 'Not available'}</p>
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Analyzing...</span>
+                </div>
             </div>
         `;
-    })
-    .catch(error => {
-        resultDiv.innerHTML = `
-            <div class="alert alert-danger">
-                Error: ${error.message}
-            </div>
-        `;
-    });
-}
+
+        fetch(`/analyze/${contentId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Analysis failed');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            resultDiv.innerHTML = `
+                <div class="analysis-section mb-3">
+                    <h6>Website Style & Tone:</h6>
+                    <p class="white-space-pre-wrap">${data.style_tone || 'Not available'}</p>
+                </div>
+                <div class="analysis-section mb-3">
+                    <h6>Products/Services & USPs:</h6>
+                    <p class="white-space-pre-wrap">${data.products_services || 'Not available'}</p>
+                </div>
+                <div class="analysis-section">
+                    <h6>Ideal Customer Profile (ICP):</h6>
+                    <p class="white-space-pre-wrap">${data.icp || 'Not available'}</p>
+                </div>
+            `;
+        })
+        .catch(error => {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    Error: ${error.message}
+                </div>
+            `;
+        });
+    }
 </script>
 {% endblock %}
