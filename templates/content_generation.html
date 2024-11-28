@@ -10,56 +10,43 @@
             </a>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card bg-dark">
-                    <div class="card-body">
-                        <h5 class="card-title">Generate New Content</h5>
-                        <form id="contentForm">
-                            <div class="mb-3">
-                                <label for="domain" class="form-label">Domain</label>
-                                <select class="form-control" id="domain" required>
-                                    <option value="">Select a domain</option>
-                                    {% for domain in domains %}
-                                    <option value="{{ domain }}">{{ domain }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="contentType" class="form-label">Content Type</label>
-                                <select class="form-control" id="contentType" required>
-                                    <option value="blog">Blog Post</option>
-                                    <option value="article">Article</option>
-                                    <option value="instagram">Instagram Post</option>
-                                    <option value="linkedin">LinkedIn Post</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="contentTitle" class="form-label">Title/Topic</label>
-                                <input type="text" class="form-control" id="contentTitle" required
-                                       placeholder="Enter content title or topic">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Generate Content</button>
-                        </form>
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title">Generate New Content</h5>
+                <form id="contentForm">
+                    <div class="mb-3">
+                        <label for="domain" class="form-label">Domain</label>
+                        <select class="form-control" id="domain" required>
+                            <option value="">Select a domain</option>
+                            {% for domain in domains %}
+                            <option value="{{ domain }}">{{ domain }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="card bg-dark">
-                    <div class="card-body">
-                        <h5 class="card-title">Generated Content</h5>
-                        <div id="contentGenerationLoader" class="d-none">
-                            <div class="d-flex justify-content-center my-4">
-                                <div class="spinner-border text-light" role="status">
-                                    <span class="visually-hidden">Generating...</span>
-                                </div>
+                    <div class="mb-3">
+                        <label for="contentType" class="form-label">Content Type</label>
+                        <select class="form-control" id="contentType" required>
+                            <option value="blog">Blog Post</option>
+                            <option value="article">Article</option>
+                            <option value="instagram">Instagram Post</option>
+                            <option value="linkedin">LinkedIn Post</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contentTitle" class="form-label">Title/Topic</label>
+                        <input type="text" class="form-control" id="contentTitle" required
+                               placeholder="Enter content title or topic">
+                    </div>
+                    <div id="contentError" class="alert alert-danger d-none"></div>
+                    <div id="contentGenerationLoader" class="d-none">
+                        <div class="d-flex justify-content-center my-4">
+                            <div class="spinner-border text-light" role="status">
+                                <span class="visually-hidden">Generating...</span>
                             </div>
                         </div>
-                        <div id="contentError" class="alert alert-danger d-none"></div>
-                        <div id="generatedContent" class="content-text d-none"></div>
                     </div>
-                </div>
+                    <button type="submit" class="btn btn-primary">Generate Content</button>
+                </form>
             </div>
         </div>
     </div>
@@ -83,23 +70,10 @@ function generateContent() {
     const contentTitle = document.getElementById('contentTitle');
     const loader = document.getElementById('contentGenerationLoader');
     const errorDiv = document.getElementById('contentError');
-    const contentDiv = document.getElementById('generatedContent');
     const submitButton = form ? form.querySelector('button[type="submit"]') : null;
 
-    // Log element status for debugging
-    console.log('DOM Elements:', {
-        form: !!form,
-        domain: !!domain,
-        contentType: !!contentType,
-        contentTitle: !!contentTitle,
-        loader: !!loader,
-        errorDiv: !!errorDiv,
-        contentDiv: !!contentDiv,
-        submitButton: !!submitButton
-    });
-
     // Check if all required elements exist
-    if (!form || !domain || !contentType || !contentTitle || !loader || !errorDiv || !contentDiv || !submitButton) {
+    if (!form || !domain || !contentType || !contentTitle || !loader || !errorDiv || !submitButton) {
         console.error('Required elements not found');
         return;
     }
@@ -110,10 +84,9 @@ function generateContent() {
         return;
     }
 
-    // Show loader and hide previous results
+    // Show loader
     loader.classList.remove('d-none');
     errorDiv.classList.add('d-none');
-    contentDiv.classList.add('d-none');
     submitButton.disabled = true;
 
     fetch(`/generate_content/${domain.value}`, {
@@ -131,9 +104,8 @@ function generateContent() {
         if (data.error) {
             throw new Error(data.error);
         }
-
-        contentDiv.textContent = data.content;
-        contentDiv.classList.remove('d-none');
+        // Log the generated content to console
+        console.log('Generated Content:', data.content);
     })
     .catch(error => {
         errorDiv.textContent = `Error generating content: ${error.message}`;
