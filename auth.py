@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from models import User, ScrapedData, ContentAnalysis, DomainSummary
+from models import User, ScrapedData, ContentAnalysis, DomainSummary, Agent
 from scraper import scrape_website, scrape_multiple_pages, parse_sitemap
 from analyzer import ContentAnalyzer
 from werkzeug.security import check_password_hash
@@ -213,12 +213,8 @@ def domain_summary(domain):
 @app.route('/agents')
 @login_required
 def agents():
-    # TODO: Implement agent statistics tracking
-    analyzer_stats = None
-    generator_stats = None
-    return render_template('agents.html', 
-                         analyzer_stats=analyzer_stats,
-                         generator_stats=generator_stats)
+    agents = Agent.query.all()
+    return render_template('agents.html', agents=agents)
 
 @app.route('/content_generation')
 @login_required

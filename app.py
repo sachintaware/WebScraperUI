@@ -32,6 +32,31 @@ with app.app_context():
     import models
     db.create_all()
 
+    # Create initial agents if they don't exist
+    from models import User, Agent
+    
+    analyzer = Agent.query.filter_by(name='Content Analyzer').first()
+    if not analyzer:
+        analyzer = Agent(
+            name='Content Analyzer',
+            role='Analyzer',
+            goal='Go through the scraped content and identify websites style, tone of language, theme and vibe. Identify products/services provided by the website/client with USP\'s. Identify ICP(ideal customer profile) for the website.',
+            backstory='You are a web Content analyst who can build product and customer profiles based on website data, blogs and articles available on the website. You can Identify products/services provided by the website/client with USP\'s and also Identify ICP(ideal customer profile) for the website.'
+        )
+        db.session.add(analyzer)
+
+    generator = Agent.query.filter_by(name='Content Generator').first()
+    if not generator:
+        generator = Agent(
+            name='Content Generator',
+            role='Content Generator',
+            goal='Generate highly engaging and platform-optimized content based on website analysis',
+            backstory='You are an expert content writer with deep expertise in creating content for multiple platforms. You understand the nuances of different content types and how to optimize for each platform while maintaining brand voice and messaging.'
+        )
+        db.session.add(generator)
+    
+    db.session.commit()
+
     # Create default admin user if not exists
     from models import User
     from werkzeug.security import generate_password_hash

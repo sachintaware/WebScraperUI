@@ -14,77 +14,47 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for agent in agents %}
                     <tr>
-                        <td>Content Analyzer</td>
+                        <td>{{ agent.name }}</td>
                         <td>
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#analyzerModal">
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ agent.id }}">
                                 View Details
                             </button>
                         </td>
                     </tr>
-                    <tr>
-                        <td>Content Generator</td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#generatorModal">
-                                View Details
-                            </button>
-                        </td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- Content Analyzer Modal -->
-<div class="modal fade" id="analyzerModal" tabindex="-1">
+<!-- Dynamic Modals -->
+{% for agent in agents %}
+<div class="modal fade" id="modal{{ agent.id }}" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
-                <h5 class="modal-title">Content Analyzer Agent</h5>
+                <h5 class="modal-title">{{ agent.name }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
                     <h6>Role:</h6>
-                    <p>Analyzer</p>
+                    <p>{{ agent.role }}</p>
                 </div>
                 <div class="mb-3">
                     <h6>Goal:</h6>
-                    <p>Go through the scraped content and identify websites style, tone of language, theme and vibe. Identify products/services provided by the website/client with USP's. Identify ICP(ideal customer profile) for the website.</p>
+                    <p>{{ agent.goal }}</p>
                 </div>
                 <div class="mb-3">
                     <h6>Backstory:</h6>
-                    <p>You are a web Content analyst who can build product and customer profiles based on website data, blogs and articles available on the website. You can Identify products/services provided by the website/client with USP's and also Identify ICP(ideal customer profile) for the website.</p>
+                    <p>{{ agent.backstory }}</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Content Generator Modal -->
-<div class="modal fade" id="generatorModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark">
-            <div class="modal-header">
-                <h5 class="modal-title">Content Generator Agent</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <h6>Role:</h6>
-                    <p>Content Generator</p>
-                </div>
-                <div class="mb-3">
-                    <h6>Goal:</h6>
-                    <p>Generate highly engaging and platform-optimized content based on website analysis.</p>
-                </div>
-                <div class="mb-3">
-                    <h6>Backstory:</h6>
-                    <p>You are an expert content writer with deep expertise in creating content for multiple platforms. You understand the nuances of different content types and how to optimize for each platform while maintaining brand voice and messaging.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% endfor %}
 {% endblock %}
