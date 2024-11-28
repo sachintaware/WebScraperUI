@@ -10,8 +10,11 @@
                     <button id="generateSummaryBtn" class="btn btn-primary" onclick="generateSummary()">
                         <i class="bi bi-file-text"></i> Generate Summary
                     </button>
-                    <button id="generateContentBtn" class="btn btn-success" onclick="openGenerateContentModal()">
+                   <!-- <button id="generateContentBtn" class="btn btn-success" onclick="openGenerateContentModal()">
                         <i class="bi bi-pencil-square"></i> Generate Content
+                    </button>-->
+                    <button type="button" class="btn btn-primary" onclick="openGenerateContentModal()">
+                        Generate Content
                     </button>
                 </div>
                 {% if domain_summary %}
@@ -134,31 +137,26 @@ function generateSummary() {
             <div class="modal-body">
                 <div class="mb-3">
                     <label for="contentType" class="form-label">Content Type</label>
-                    <select class="form-select" id="contentType">
-                        <option value="blog">Blog</option>
+                    <select class="form-control" id="contentType">
+                        <option value="blog">Blog Post</option>
                         <option value="article">Article</option>
-                        <option value="instagram">Instagram post</option>
+                        <option value="instagram">Instagram Post</option>
                         <option value="linkedin">LinkedIn Post</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="contentTitle" class="form-label">Title/Topic</label>
-                    <input type="text" class="form-control" id="contentTitle" placeholder="Enter title or topic">
+                    <label for="contentTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="contentTitle" placeholder="Enter content title">
                 </div>
                 <div id="contentGenerationLoader" class="d-none">
                     <div class="d-flex justify-content-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Generating Content...</span>
+                        <div class="spinner-border text-light" role="status">
+                            <span class="visually-hidden">Generating...</span>
                         </div>
                     </div>
                 </div>
-                <div id="generatedContent" class="d-none">
-                    <div class="analysis-section">
-                        <h6>Generated Content:</h6>
-                        <div id="contentResult" class="white-space-pre-wrap"></div>
-                    </div>
-                </div>
                 <div id="contentError" class="alert alert-danger d-none"></div>
+                <div id="contentResult" class="content-text d-none white-space-pre-wrap"></div>
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -227,6 +225,12 @@ function generateContent() {
     errorDiv.classList.add('d-none');
     generateButton.disabled = true;
 
+    const contentResult = modalElement.querySelector('#contentResult');
+    if (!contentResult) {
+        console.error('Content result element not found');
+        return;
+    }
+
     fetch(`/generate_content/{{ domain }}`, {
         method: 'POST',
         headers: {
@@ -243,13 +247,8 @@ function generateContent() {
             throw new Error(data.error);
         }
         
-        const contentResult = document.getElementById('contentResult');
-        if (!contentResult) {
-            throw new Error('Content result element not found');
-        }
-        
         contentResult.textContent = data.content;
-        resultDiv.classList.remove('d-none');
+        contentResult.classList.remove('d-none');
     })
     .catch(error => {
         errorDiv.textContent = `Error generating content: ${error.message}`;
