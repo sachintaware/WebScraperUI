@@ -64,25 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function generateContent() {
-    const form = document.getElementById('contentForm');
-    const domain = document.getElementById('domain');
-    const contentType = document.getElementById('contentType');
-    const contentTitle = document.getElementById('contentTitle');
-    const loader = document.getElementById('contentGenerationLoader');
-    const errorDiv = document.getElementById('contentError');
-    const submitButton = form ? form.querySelector('button[type="submit"]') : null;
 
-    // Check if all required elements exist
-    if (!form || !domain || !contentType || !contentTitle || !loader || !errorDiv || !submitButton) {
-        console.error('Required elements not found');
-        return;
-    }
-
-    if (!domain.value || !contentTitle.value.trim()) {
-        errorDiv.textContent = 'Please fill in all required fields';
-        errorDiv.classList.remove('d-none');
-        return;
-    }
 
     // Show loader
     loader.classList.remove('d-none');
@@ -104,6 +86,7 @@ function generateContent() {
         if (data.error) {
             throw new Error(data.error);
         }
+        // Log the generated content to console
         console.log('Generated Content:', data.content);
     })
     .catch(error => {
