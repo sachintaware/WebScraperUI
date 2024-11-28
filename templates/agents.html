@@ -3,26 +3,28 @@
 {% block content %}
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">CrewAI Agents</h2>
+        <h2 class="card-title mb-4">CrewAI Agents</h2>
         
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Agent Name</th>
-                        <th>Actions</th>
+                        <th class="w-50">Agent Name</th>
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for agent in agents %}
                     <tr>
-                        <td>{{ agent.name }}</td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ agent.id }}">
-                                View Details
+                        <td class="align-middle">
+                            <span class="fw-medium">{{ agent.name }}</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ agent.id }}">
+                                <i class="bi bi-eye"></i> View Details
                             </button>
-                            <button type="button" class="btn btn-warning btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#editModal{{ agent.id }}">
-                                Edit
+                            <button type="button" class="btn btn-outline-warning btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#editModal{{ agent.id }}">
+                                <i class="bi bi-pencil"></i> Edit
                             </button>
                         </td>
                     </tr>
@@ -33,27 +35,27 @@
     </div>
 </div>
 
-<!-- Dynamic Modals -->
+<!-- View Details Modals -->
 {% for agent in agents %}
 <div class="modal fade" id="modal{{ agent.id }}" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
-                <h5 class="modal-title">{{ agent.name }}</h5>
+                <h5 class="modal-title fw-bold">{{ agent.name }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <h6>Role:</h6>
-                    <p>{{ agent.role }}</p>
+                <div class="mb-4">
+                    <h6 class="fw-bold text-primary mb-2">Role</h6>
+                    <p class="mb-0">{{ agent.role }}</p>
                 </div>
-                <div class="mb-3">
-                    <h6>Goal:</h6>
-                    <p>{{ agent.goal }}</p>
+                <div class="mb-4">
+                    <h6 class="fw-bold text-primary mb-2">Goal</h6>
+                    <p class="mb-0">{{ agent.goal }}</p>
                 </div>
-                <div class="mb-3">
-                    <h6>Backstory:</h6>
-                    <p>{{ agent.backstory }}</p>
+                <div>
+                    <h6 class="fw-bold text-primary mb-2">Backstory</h6>
+                    <p class="mb-0">{{ agent.backstory }}</p>
                 </div>
             </div>
         </div>
@@ -67,27 +69,27 @@
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
-                <h5 class="modal-title">Edit {{ agent.name }}</h5>
+                <h5 class="modal-title fw-bold">Edit {{ agent.name }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="editForm{{ agent.id }}" action="{{ url_for('update_agent', agent_id=agent.id) }}" method="POST">
-                    <div class="mb-3">
-                        <label for="role{{ agent.id }}" class="form-label">Role:</label>
+                    <div class="mb-4">
+                        <label for="role{{ agent.id }}" class="form-label fw-medium">Role</label>
                         <input type="text" class="form-control" id="role{{ agent.id }}" name="role" value="{{ agent.role }}" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="goal{{ agent.id }}" class="form-label">Goal:</label>
+                    <div class="mb-4">
+                        <label for="goal{{ agent.id }}" class="form-label fw-medium">Goal</label>
                         <textarea class="form-control" id="goal{{ agent.id }}" name="goal" rows="3" required>{{ agent.goal }}</textarea>
                     </div>
-                    <div class="mb-3">
-                        <label for="backstory{{ agent.id }}" class="form-label">Backstory:</label>
+                    <div class="mb-4">
+                        <label for="backstory{{ agent.id }}" class="form-label fw-medium">Backstory</label>
                         <textarea class="form-control" id="backstory{{ agent.id }}" name="backstory" rows="3" required>{{ agent.backstory }}</textarea>
                     </div>
                     <div id="editError{{ agent.id }}" class="alert alert-danger d-none"></div>
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="submit" class="btn btn-primary ms-2">Save Changes</button>
                     </div>
                 </form>
             </div>
