@@ -72,6 +72,17 @@ function generateContent() {
     const errorDiv = document.getElementById('contentError');
     const submitButton = form ? form.querySelector('button[type="submit"]') : null;
 
+    // Log element status for debugging
+    console.log('Elements found:', {
+        form: !!form,
+        domain: !!domain,
+        contentType: !!contentType,
+        contentTitle: !!contentTitle,
+        loader: !!loader,
+        errorDiv: !!errorDiv,
+        submitButton: !!submitButton
+    });
+
     // Check if all required elements exist
     if (!form || !domain || !contentType || !contentTitle || !loader || !errorDiv || !submitButton) {
         console.error('Required elements not found');
