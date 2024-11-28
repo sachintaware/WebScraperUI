@@ -127,6 +127,7 @@ function generateSummary() {
 }
 </script>
 <!-- Content Generation Modal -->
+<!-- Content Generation Modal -->
 <div class="modal fade" id="contentGenerationModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content bg-dark">
@@ -148,6 +149,8 @@ function generateSummary() {
                     <label for="contentTitle" class="form-label">Title</label>
                     <input type="text" class="form-control" id="contentTitle" placeholder="Enter content title">
                 </div>
+                <!-- Error Message Div -->
+                <div id="contentError" class="alert alert-danger d-none"></div>
                 <div id="contentGenerationLoader" class="d-none">
                     <div class="d-flex justify-content-center">
                         <div class="spinner-border text-light" role="status">
@@ -155,8 +158,7 @@ function generateSummary() {
                         </div>
                     </div>
                 </div>
-                <div id="contentError" class="alert alert-danger d-none"></div>
-                <div id="contentResult" class="content-text d-none white-space-pre-wrap"></div>
+                <div id="generatedContent" class="content-text d-none"></div>
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -206,6 +206,14 @@ def domain_summary(domain):
     except Exception as e:
         app.logger.error(f"Error generating domain summary for {domain}: {str(e)}")
         return jsonify({'error': str(e)}), 500
+@app.route('/content_generation')
+@login_required
+def content_generation():
+    # Get unique domains from scraped data
+    domains = db.session.query(ScrapedData.domain).distinct().all()
+    domains = [domain[0] for domain in domains if domain[0]]  # Extract domain names and filter None
+    return render_template('content_generation.html', domains=domains)
+
 
 @app.route('/generate_content/<domain>', methods=['POST'])
 @login_required

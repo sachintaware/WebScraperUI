@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="card-title mb-0">Content Generation</h2>
+            <a href="{{ url_for('data') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Overview
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card bg-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Generate New Content</h5>
+                        <form id="contentForm">
+                            <div class="mb-3">
+                                <label for="domain" class="form-label">Domain</label>
+                                <select class="form-control" id="domain" required>
+                                    <option value="">Select a domain</option>
+                                    {% for domain in domains %}
+                                    <option value="{{ domain }}">{{ domain }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="contentType" class="form-label">Content Type</label>
+                                <select class="form-control" id="contentType" required>
+                                    <option value="blog">Blog Post</option>
+                                    <option value="article">Article</option>
+                                    <option value="instagram">Instagram Post</option>
+                                    <option value="linkedin">LinkedIn Post</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="contentTitle" class="form-label">Title/Topic</label>
+                                <input type="text" class="form-control" id="contentTitle" required
+                                       placeholder="Enter content title or topic">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Generate Content</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card bg-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Generated Content</h5>
+                        <div id="contentGenerationLoader" class="d-none">
+                            <div class="d-flex justify-content-center my-4">
+                                <div class="spinner-border text-light" role="status">
+                                    <span class="visually-hidden">Generating...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="contentError" class="alert alert-danger d-none"></div>
+                        <div id="generatedContent" class="content-text d-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('contentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    generateContent();
+});
+
+function generateContent() {
+    const domain = document.getElementById('domain').value;
+    const contentType = document.getElementById('contentType').value;
+    const contentTitle = document.getElementById('contentTitle').value;
+    const loader = document.getElementById('contentGenerationLoader');
+    const errorDiv = document.getElementById('contentError');
+    const contentDiv = document.getElementById('generatedContent');
+    const submitButton = document.querySelector('button[type="submit"]');
+
+    if (!domain || !contentTitle.trim()) {
+        errorDiv.textContent = 'Please fill in all required fields';
+        errorDiv.classList.remove('d-none');
+        return;
+    }
+
+    // Show loader and hide previous results
+    loader.classList.remove('d-none');
+    errorDiv.classList.add('d-none');
+    contentDiv.classList.add('d-none');
+    submitButton.disabled = true;
+
+    fetch(`/generate_content/${domain}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            content_type: contentType,
+            title: contentTitle 
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        contentDiv.textContent = data.content;
+        contentDiv.classList.remove('d-none');
+    })
+    .catch(error => {
+        errorDiv.textContent = `Error generating content: ${error.message}`;
+        errorDiv.classList.remove('d-none');
+    })
+    .finally(() => {
+        loader.classList.add('d-none');
+        submitButton.disabled = false;
+    });
+}
+</script>
+{% endblock %}
