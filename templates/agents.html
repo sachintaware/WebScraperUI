@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="card-title mb-0">CrewAI Agents</h2>
+        </div>
+
+        <div class="row">
+            <!-- Analyzer Agent Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card bg-dark h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Content Analyzer</h5>
+                        <p class="card-text">
+                            Role: Analyzes website content to identify style, tone, products/services, and ideal customer profiles.
+                        </p>
+                        <h6 class="mt-3">Capabilities:</h6>
+                        <ul>
+                            <li>Website style and tone analysis</li>
+                            <li>Product and service identification</li>
+                            <li>Customer profile generation</li>
+                            <li>Domain-level content analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Generator Agent Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card bg-dark h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Content Generator</h5>
+                        <p class="card-text">
+                            Role: Generates platform-specific content based on website analysis and domain summaries.
+                        </p>
+                        <h6 class="mt-3">Content Types:</h6>
+                        <ul>
+                            <li>Blog Posts (800-1200 words)</li>
+                            <li>Articles (1000-1500 words)</li>
+                            <li>Instagram Posts (150-200 words)</li>
+                            <li>LinkedIn Posts (200-300 words)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Performance Section -->
+        <div class="mt-4">
+            <h3 class="mb-3">Agent Performance</h3>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Tasks Completed</th>
+                            <th>Average Response Time</th>
+                            <th>Success Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Content Analyzer</td>
+                            <td>{{ analyzer_stats.tasks_completed if analyzer_stats else 'N/A' }}</td>
+                            <td>{{ analyzer_stats.avg_response_time if analyzer_stats else 'N/A' }}</td>
+                            <td>{{ analyzer_stats.success_rate if analyzer_stats else 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Content Generator</td>
+                            <td>{{ generator_stats.tasks_completed if generator_stats else 'N/A' }}</td>
+                            <td>{{ generator_stats.avg_response_time if generator_stats else 'N/A' }}</td>
+                            <td>{{ generator_stats.success_rate if generator_stats else 'N/A' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
