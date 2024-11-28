@@ -197,7 +197,7 @@ function generateContent() {
     const contentType = modalElement.querySelector('#contentType');
     const contentTitle = modalElement.querySelector('#contentTitle');
     const loader = modalElement.querySelector('#contentGenerationLoader');
-    const resultDiv = modalElement.querySelector('#contentResult');
+    const resultDiv = modalElement.querySelector('#generatedContent');
     const errorDiv = modalElement.querySelector('#contentError');
     const generateButton = modalElement.querySelector('.btn-primary');
 
@@ -234,9 +234,7 @@ function generateContent() {
     resultDiv.classList.add('d-none');
     errorDiv.classList.add('d-none');
     generateButton.disabled = true;
-
-    const contentResult = modalElement.querySelector('#contentResult');
-    if (!contentResult) {
+    if (!resultDiv) {
         console.error('Content result element not found');
         return;
     }
@@ -257,8 +255,8 @@ function generateContent() {
             throw new Error(data.error);
         }
         
-        contentResult.textContent = data.content;
-        contentResult.classList.remove('d-none');
+        resultDiv.textContent = data.content;
+        resultDiv.classList.remove('d-none');
     })
     .catch(error => {
         errorDiv.textContent = `Error generating content: ${error.message}`;

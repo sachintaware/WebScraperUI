@@ -1,0 +1,40 @@
+<!-- Content Generation Modal -->
+<div class="modal fade" id="contentGenerationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Generate Content</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="contentType" class="form-label">Content Type</label>
+                    <select class="form-control" id="contentType">
+                        <option value="blog">Blog Post</option>
+                        <option value="article">Article</option>
+                        <option value="instagram">Instagram Post</option>
+                        <option value="linkedin">LinkedIn Post</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="contentTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="contentTitle" placeholder="Enter content title">
+                </div>
+                <!-- Error Message Div -->
+                <div id="contentError" class="alert alert-danger d-none"></div>
+                <div id="contentGenerationLoader" class="d-none">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="visually-hidden">Generating...</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="generatedContent" class="content-text d-none"></div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="generateContent()">Generate</button>
+            </div>
+        </div>
+    </div>
+</div>
