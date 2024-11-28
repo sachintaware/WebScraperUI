@@ -200,6 +200,15 @@ function generateContent() {
     const generateButton = modalElement.querySelector('.btn-primary');
 
     // Check if all required elements exist
+    console.log({
+        contentType: !!contentType,
+        contentTitle: !!contentTitle,
+        loader: !!loader,
+        resultDiv: !!resultDiv,
+        errorDiv: !!errorDiv,
+        generateButton: !!generateButton
+    });
+    
     if (!contentType || !contentTitle || !loader || !resultDiv || !errorDiv || !generateButton) {
         console.error('Required modal elements not found:', {
             contentType: !!contentType,
