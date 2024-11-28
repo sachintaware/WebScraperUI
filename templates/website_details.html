@@ -186,7 +186,6 @@ function openGenerateContentModal() {
 }
 
 function generateContent() {
-    // Get modal elements
     const modalElement = document.getElementById('contentGenerationModal');
     if (!modalElement) {
         console.error('Modal element not found');
@@ -196,7 +195,7 @@ function generateContent() {
     const contentType = modalElement.querySelector('#contentType');
     const contentTitle = modalElement.querySelector('#contentTitle');
     const loader = modalElement.querySelector('#contentGenerationLoader');
-    const resultDiv = modalElement.querySelector('#generatedContent');
+    const resultDiv = modalElement.querySelector('#contentResult');
     const errorDiv = modalElement.querySelector('#contentError');
     const generateButton = modalElement.querySelector('.btn-primary');
 
