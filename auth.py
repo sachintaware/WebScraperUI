@@ -224,6 +224,21 @@ def content_generation():
     domains = [domain[0] for domain in domains if domain[0]]  # Extract domain names and filter None
     return render_template('content_generation.html', domains=domains)
 
+@app.route('/update_agent/<int:agent_id>', methods=['POST'])
+@login_required
+def update_agent(agent_id):
+    try:
+        agent = Agent.query.get_or_404(agent_id)
+        agent.role = request.form.get('role')
+        agent.goal = request.form.get('goal')
+        agent.backstory = request.form.get('backstory')
+        db.session.commit()
+        flash('Agent updated successfully')
+        return redirect(url_for('agents'))
+    except Exception as e:
+        flash(f'Error updating agent: {str(e)}')
+        return redirect(url_for('agents'))
+
 @app.route('/generate_content/<domain>', methods=['POST'])
 @login_required
 def generate_content(domain):

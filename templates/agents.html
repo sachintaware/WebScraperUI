@@ -21,6 +21,9 @@
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ agent.id }}">
                                 View Details
                             </button>
+                            <button type="button" class="btn btn-warning btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#editModal{{ agent.id }}">
+                                Edit
+                            </button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -52,6 +55,41 @@
                     <h6>Backstory:</h6>
                     <p>{{ agent.backstory }}</p>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Edit Modals -->
+{% for agent in agents %}
+<div class="modal fade" id="editModal{{ agent.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit {{ agent.name }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm{{ agent.id }}" action="{{ url_for('update_agent', agent_id=agent.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="role{{ agent.id }}" class="form-label">Role:</label>
+                        <input type="text" class="form-control" id="role{{ agent.id }}" name="role" value="{{ agent.role }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="goal{{ agent.id }}" class="form-label">Goal:</label>
+                        <textarea class="form-control" id="goal{{ agent.id }}" name="goal" rows="3" required>{{ agent.goal }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="backstory{{ agent.id }}" class="form-label">Backstory:</label>
+                        <textarea class="form-control" id="backstory{{ agent.id }}" name="backstory" rows="3" required>{{ agent.backstory }}</textarea>
+                    </div>
+                    <div id="editError{{ agent.id }}" class="alert alert-danger d-none"></div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
